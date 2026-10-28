@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bellefly Kids Story Builder — Hackathon Demo</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#f7f2fb;color:#2b2140}
+  .wrap{min-height:100vh;min-height:100dvh;max-width:720px;margin:0 auto;padding:20px 16px 40px}
+  header{background:#5b2a86;color:#fff;border-radius:18px;padding:20px}
+  header h1{margin:0 0 6px;font-size:28px;line-height:1.2}
+  header p{margin:4px 0}
+  .sign{display:inline-block;background:#fff;color:#5b2a86;border-radius:999px;padding:4px 12px;font-weight:700;font-size:13px}
+  .card{background:#fff;border-radius:18px;padding:18px;margin-top:16px;box-shadow:0 2px 10px rgba(91,42,134,.08)}
+  h2{margin:0 0 10px;font-size:20px;color:#5b2a86}
+  h3{margin:16px 0 8px;font-size:16px}
+  .note{font-size:14px;line-height:1.5;color:#5a4a73}
+  .grid{display:flex;flex-wrap:wrap;gap:8px}
+  button{border:2px solid #d9c7ef;background:#fff;color:#2b2140;border-radius:999px;padding:10px 14px;font-size:15px;cursor:pointer}
+  button.sel{background:#5b2a86;color:#fff;border-color:#5b2a86}
+  button.primary{background:#5b2a86;color:#fff;border-color:#5b2a86;font-weight:700;width:100%;padding:14px;font-size:17px}
+  button.secondary{background:#fff;color:#5b2a86;border-color:#5b2a86}
+  input{width:100%;padding:12px;border:2px solid #d9c7ef;border-radius:12px;font-size:16px}
+  .story{min-height:340px;line-height:1.65;font-size:17px;white-space:pre-wrap}
+  .trust{margin-top:14px;padding:12px;background:#eef7ee;border-radius:12px;font-size:14px}
+  .fail{background:#fdf0f0;border:1px solid #e8b4b4;border-radius:12px;padding:12px;margin-top:10px}
+  .pass{background:#eef7ee;border:1px solid #b7d7b7;border-radius:12px;padding:12px;margin-top:10px}
+  .small{font-size:13px;color:#6b5a85}
+  footer{margin-top:20px;font-size:13px;color:#6b5a85;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="sign">Bellefly Kids</span>
+    <h1>Story Builder</h1>
+    <p>Safe, parent-led bedtime stories from the Bellefly Kids world.</p>
+    <p class="small" style="color:#e6d9f5">Hackathon demo — a parent picks, a parent reads aloud. Children listen, never type.</p>
+  </header>
+
+  <div class="card">
+    <h2>1. Pick a character</h2>
+    <div class="grid" id="chars"></div>
+    <h2 style="margin-top:18px">2. Pick a theme</h2>
+    <div class="grid" id="themes"></div>
+    <h2 style="margin-top:18px">3. Pick an age</h2>
+    <div class="grid" id="ages"></div>
+    <h3>Child's first name (optional, for the parent to use — never stored)</h3>
+    <input id="childName" type="text" placeholder="First name only, or leave blank" autocomplete="off">
+    <div style="margin-top:16px"><button class="primary" id="makeBtn">Make a story</button></div>
+    <p class="note">Three taps to a story. Every story is checked against Ms. Chalette's story rules before a parent reads it aloud: kind, calm, honest, bedtime-safe, with no scary parts and no teasing.</p>
+  </div>
+
+  <div class="card" id="storyCard" style="display:none">
+    <button class="secondary" id="readBtn" style="width:100%;padding:13px;font-weight:700">▶ Read to me</button>
+    <button id="stopBtn" style="width:100%;padding:11px;margin-top:8px;display:none">■ Stop reading</button>
+    <h2 id="storyTitle" style="margin-top:16px"></h2>
+    <div class="story" id="storyText"></div>
+    <div class="trust">✓ Checked against Ms. Chalette's story rules — kind, calm, and bedtime-safe.</div>
+    <div style="margin-top:14px"><button class="primary" id="againBtn">Make another story</button></div>
+  </div>
+
+  <div class="card">
+    <h2>See the safety check</h2>
+    <p class="note">This is the heart of the demo. A draft is checked first. If it fails, it is revised until it passes. Only the passing story is shown to a parent.</p>
+    <button class="secondary" id="safetyBtn" style="width:100%;padding:12px">Show the safety check example</button>
+    <div id="safetyBox" style="display:none">
+      <div class="fail"><strong>Draft — FAILS the check</strong><br>
+      Toby stays up all night by himself, eats only candy, and laughs when his friend falls down.<br>
+      <em>Why it fails: staying up alone, only candy, and laughing at a friend who fell.</em></div>
+      <div class="pass"><strong>Revised story — PASSES the check</strong><br>
+      Toby helps his friend up, shares a healthy snack, and gets ready for bed on time.<br>
+      <em>Why it passes: kind help, a healthy choice, and a calm bedtime ending.</em></div>
+      <p class="note">The same check runs on every story in this demo: kind words, calm pacing, honest and helpful actions, and a gentle bedtime ending. If a draft is unsure, it is blocked, not shown.</p>
+    </div>
+  </div>
+
+  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026.<br>Demo stories only. No child accounts, no stored child data.</footer>
+</div>
+
+<script>
+const CHARACTERS = {
+  "Toby": "a cheerful little boy with short blonde hair, a light blue shirt, mustard-yellow overalls, and a blue bow tie",
+  "Emma": "a cheerful little girl with wavy brown hair, a pink butterfly hair pin, and a pink butterfly-and-flower dress",
+  "Luna": "a cute baby butterfly with big purple eyes and large sparkly purple and pink wings with polka dots",
+  "Shelly": "a fluffy baby dragonfly with pastel blue and lavender fur, big purple eyes, and a purple bow",
+  "Benny Baby Bee": "a cute fluffy baby bee with golden-yellow fur and a purple bow tie with a gold heart",
+  "Cory": "a cute fluffy little caterpillar with light-green fur and a green polka-dot bow tie",
+  "Pippa": "a cute baby girl with golden-brown hair in a high ponytail with a pink bow, wearing a pink dress",
+  "Taylor Shift": "a cute smiling pink train engine with a friendly face, gold trim, and pink flowers by the smokestack"
+};
+const THEMES = ["kindness","courage","sharing","patience","gratitude","friendship"];
+const AGES = ["2-3","4-5","6-7"];
+
+const STORIES = {
+  kindness: [
+    "In the Bellefly Kids Garden, on a soft, sunny morning, {C} found a friend who had dropped a basket of flowers. The friend looked sad, so {C} knelt down, smiled warmly, and said, 'Let me help you.' Together, they picked up every flower, one by one, until the basket was full again.",
+    "The friend smiled and said, 'Thank you. That was very kind.' {C} felt happy, not because of a prize, but because helping felt good. They walked together along the garden path, sharing quiet, happy talk, and enjoying the flowers and the gentle breeze.",
+    "That evening, {C} thought about the day and felt glad. A small kind act had made a big difference to a friend. Kindness, {C} learned, is something we can give every day, in small, gentle ways."
+  ],
+  courage: [
+    "In the Bellefly Kids Garden, {C} wanted to try something new, but felt a little shy. A friend stood nearby and said, 'I will stay with you. We can try together.' {C} took a slow, deep breath and took one small step forward.",
+    "Step by step, {C} kept going. It was not easy at first, but the friend cheered softly, and {C} kept trying. Soon, {C} could do the new thing, and felt proud — not for being perfect, but for trying with a brave heart.",
+    "That evening, {C} smiled and said, 'I was a little nervous, and I tried anyway.' Courage, {C} learned, is not about never feeling nervous. It is about trying, one gentle step at a time, with friends beside us."
+  ],
+  sharing: [
+    "In the Bellefly Kids Garden, {C} had a favourite toy to play with, and a friend wanted a turn too. At first, {C} held it close. Then {C} remembered how good it feels when someone shares, and said, 'We can take turns. You go first.'",
+    "They played together, taking turns and laughing softly. The toy was even more fun when it was shared, because they could enjoy it together and think of new games to play.",
+    "That evening, {C} felt happy and peaceful. Sharing had not taken the fun away — it had made the fun bigger. When we share, everyone can enjoy, and everyone feels included."
+  ],
+  patience: [
+    "In the Bellefly Kids Garden, {C} wanted a turn on the swing, but a friend was already swinging. {C} felt a little impatient. Instead of pushing, {C} sat on a soft patch of grass, watched the flowers, and waited calmly for a turn.",
+    "While waiting, {C} noticed a butterfly resting on a flower, and a bird singing in a tree. Waiting, {C} learned, can be a quiet time to notice beautiful things. Soon, the friend smiled and said, 'Your turn now.'",
+    "That evening, {C} felt calm and proud. Patience had helped {C} wait kindly, without rushing or fussing. Good things, {C} learned, are worth waiting for, one gentle moment at a time."
+  ],
+  gratitude: [
+    "In the Bellefly Kids Garden, {C} thought about all the good things in the day: a friend who helped, a warm lunch, flowers in the sunshine, and a kind word from a grown-up. {C} said, 'Thank you,' out loud, and it felt warm and good.",
+    "{C} thanked the friend for helping, thanked the grown-up for the kind word, and smiled at the flowers. Saying thank you, {C} learned, helps us notice the good things we already have, instead of only wanting more.",
+    "That evening, before bed, {C} whispered three quiet thank-yous: for a friend, for family, and for a calm, happy day. Gratitude made the day feel full and peaceful, like a soft blanket at bedtime."
+  ],
+  friendship: [
+    "In the Bellefly Kids Garden, {C} met a new friend who did not know anyone yet. The new friend looked a little lonely. {C} smiled, walked over, and said, 'Would you like to play with me?' The new friend's face brightened.",
+    "They played together, learned each other's names, and took turns choosing games. They listened to each other, shared ideas, and were kind when they disagreed. By the end of the day, they were true friends.",
+    "That evening, {C} felt glad. A friend is someone who listens, shares, and cares. Friendship grows, {C} learned, when we welcome others with a warm smile and a kind heart."
+  ]
+};
+
+let selChar = "Toby", selTheme = "kindness", selAge = "4-5";
+function renderButtons(elId, items, current, setter){
+  const el = document.getElementById(elId);
+  el.innerHTML = "";
+  items.forEach(function(item){
+    const b = document.createElement("button");
+    b.textContent = item;
+    if(item === current) b.className = "sel";
+    b.onclick = function(){ setter(item); renderAll(); };
+    el.appendChild(b);
+  });
+}
+function renderAll(){
+  renderButtons("chars", Object.keys(CHARACTERS), selChar, function(v){selChar=v;});
+  renderButtons("themes", THEMES, selTheme, function(v){selTheme=v;});
+  renderButtons("ages", AGES, selAge, function(v){selAge=v;});
+}
+function titleCase(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+function makeStory(){
+  const name = document.getElementById("childName").value.trim();
+  const intro = selChar + ", " + CHARACTERS[selChar] + ", is ready for a gentle bedtime story about " + selTheme + ".";
+  let paras = STORIES[selTheme].slice();
+  if(selAge === "2-3") paras = paras.slice(0,2);
+  let text = intro + "\n\n" + paras.join("\n\n");
+  if(selAge === "6-7") text += "\n\nAs the stars came out over the garden, " + selChar + " yawned softly, felt safe and loved, and was ready for a good night's sleep.";
+  if(name) text = "For " + name + ", a story about " + selTheme + ".\n\n" + text + "\n\nGoodnight, " + name + ". Sleep tight, and dream sweet dreams.";
+  else text += "\n\nGoodnight, little one. Sleep tight, and dream sweet dreams.";
+  document.getElementById("storyTitle").textContent = selChar + " — " + titleCase(selTheme) + " (ages " + selAge + ")";
+  document.getElementById("storyText").textContent = text;
+  document.getElementById("storyCard").style.display = "block";
+  document.getElementById("storyCard").scrollIntoView({behavior:"smooth"});
+  window.speechSynthesis.cancel();
+  document.getElementById("stopBtn").style.display = "none";
+}
+document.getElementById("makeBtn").onclick = makeStory;
+document.getElementById("againBtn").onclick = makeStory;
+document.getElementById("readBtn").onclick = function(){
+  const text = document.getElementById("storyText").textContent;
+  if(!("speechSynthesis" in window)){ alert("Read to me is not available on this device. A parent can read the story aloud."); return; }
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.9;
+  window.speechSynthesis.speak(u);
+  document.getElementById("stopBtn").style.display = "block";
+};
+document.getElementById("stopBtn").onclick = function(){
+  window.speechSynthesis.cancel();
+  this.style.display = "none";
+};
+document.getElementById("safetyBtn").onclick = function(){
+  const box = document.getElementById("safetyBox");
+  box.style.display = box.style.display === "none" ? "block" : "none";
+  this.textContent = box.style.display === "none" ? "Show the safety check example" : "Hide the safety check example";
+};
+renderAll();
+</script>
+</body>
+</html>
