@@ -33,6 +33,12 @@
   .fail{background:#fdf0f0;border:1px solid #e8b4b4;border-radius:12px;padding:12px;margin-top:10px}
   .pass{background:#eef7ee;border:1px solid #b7d7b7;border-radius:12px;padding:12px;margin-top:10px}
   .small{font-size:13px;color:#6b5a85}
+  button:focus-visible{outline:3px solid #ffbf47;outline-offset:2px}
+  .check{font-size:14px;line-height:1.6}
+  .check .ok{color:#2e7d32}
+  .check .bad{color:#a33}
+  .imgfallback{width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;background:#e6d9f5;border-radius:12px;font-size:22px;font-weight:700;color:#5b2a86}
+  @media (prefers-reduced-motion: reduce){ *{scroll-behavior:auto !important} }
   footer{margin-top:20px;font-size:13px;color:#6b5a85;text-align:center}
 </style>
 </head>
@@ -53,7 +59,8 @@
     <h2 style="margin-top:18px">3. Pick an age</h2>
     <div class="grid" id="ages"></div>
     <h3>Child's first name (optional, for the parent to use — never stored)</h3>
-    <input id="childName" type="text" placeholder="First name only, or leave blank" autocomplete="off">
+    <input id="childName" type="text" placeholder="First name only, or leave blank" autocomplete="off" maxlength="20">
+    <p class="note" id="nameNote">Names must be letters only, up to 20 characters. Anything else is not used — the story uses "little one" instead.</p>
     <div style="margin-top:16px"><button class="primary" id="makeBtn">Make a story</button></div>
     <p class="note">Three taps to a story. Every story is checked against Ms. Chalette's story rules before a parent reads it aloud: kind, calm, honest, bedtime-safe, with no scary parts and no teasing.</p>
   </div>
@@ -65,7 +72,16 @@
     <img id="storyImg" class="storyimg" alt="" style="display:none">
     <div class="story" id="storyText"></div>
     <div class="trust">✓ Checked against Ms. Chalette's story rules — kind, calm, and bedtime-safe.</div>
+    <div class="check" id="validatorLog" style="margin-top:12px"></div>
     <div style="margin-top:14px"><button class="primary" id="againBtn">Make another story</button></div>
+  </div>
+
+
+  <div class="card">
+    <h2>How the safety check works</h2>
+    <p class="note">Generator → Independent Validator → Revision → Parent approval. The generator and the validator are separate functions. The validator does not write stories, it only checks them. If a draft fails, it is blocked, not shown. This is a rule-based validator, not a claim of guaranteed safety, and not a live AI filter.</p>
+    <button class="secondary" id="testValidatorBtn" style="width:100%;padding:12px">Test the validator on a bad draft</button>
+    <div class="check" id="validatorTest" style="margin-top:12px"></div>
   </div>
 
   <div class="card">
@@ -83,7 +99,7 @@
     </div>
   </div>
 
-  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026.<br>Demo stories only. Pictures as separate files in repo root, October 29, 2026. No child accounts, no stored child data.</footer>
+  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026.<br>Demo stories only. V7, October 29, 2026: real validator, name check, pictures as separate files in repo root. No child accounts, no stored child data.</footer>
 </div>
 
 <script>
@@ -134,6 +150,40 @@ const STORIES = {
   ]
 };
 
+
+// --- V7 Validator: separate from the story generator, fail-closed ---
+const BANNED_WORDS = ["magic","magical","mystical","ghost","monster","witch","haunted","blood","kill","hate","stupid","dumb","damn","hell","shit","fuck","bitch"];
+const BANNED_PHRASES = ["stays up all night","only candy","laughs when","laughs at","teases","by himself","alone at night","pushes","hits"];
+function normalizeText(t){
+  return t.toLowerCase().replace(/0/g,"o").replace(/1/g,"i").replace(/\$/g,"s").replace(/@/g,"a");
+}
+function validateStory(text){
+  const n = normalizeText(text);
+  const checks = [];
+  const badWord = BANNED_WORDS.find(function(w){ return new RegExp("\\b"+w+"\\b").test(n); });
+  checks.push({name:"No banned words", pass:!badWord, detail: badWord ? "Found: "+badWord : "None found"});
+  const badPhrase = BANNED_PHRASES.find(function(p){ return n.indexOf(p) !== -1; });
+  checks.push({name:"No banned ideas (staying up alone, only candy, laughing at a friend)", pass:!badPhrase, detail: badPhrase ? "Found: "+badPhrase : "None found"});
+  checks.push({name:"Kind help present", pass:/(help|kind|share|thank)/.test(n), detail:"Story must show help, kindness, sharing, or thanks"});
+  const tail = n.slice(-300);
+  checks.push({name:"Calm bedtime ending", pass:/(goodnight|sleep tight|dream sweet dreams)/.test(tail), detail:"Ending must say goodnight / sleep tight"});
+  checks.push({name:"No scary or teasing language", pass:!/(scary|frighten|teases|bull)/.test(n), detail:"No scary or teasing words"});
+  return {passed: checks.every(function(c){return c.pass;}), checks: checks};
+}
+function validateName(name){
+  if(!name) return {ok:true, safe:""};
+  if(name.length > 20) return {ok:false, safe:""};
+  if(!/^[A-Za-z][A-Za-z' \-]{0,19}$/.test(name)) return {ok:false, safe:""};
+  if(BANNED_WORDS.indexOf(name.toLowerCase()) !== -1) return {ok:false, safe:""};
+  return {ok:true, safe:name};
+}
+function renderChecks(el, result){
+  el.innerHTML = "<strong>Validator result: " + (result.passed ? "PASS — story approved for a parent to read" : "FAIL — story blocked") + "</strong><br>" +
+    result.checks.map(function(c){ return "<span class='" + (c.pass ? "ok" : "bad") + "'>" + (c.pass ? "✓ " : "✗ ") + c.name + " — " + c.detail + "</span>"; }).join("<br>");
+}
+const UNSAFE_DRAFT = "Toby stays up all night by himself, eats only candy, and laughs when his friend falls down.";
+const SAFE_REVISION = "Toby helps his friend up, shares a healthy snack, and gets ready for bed on time. Goodnight, little one. Sleep tight, and dream sweet dreams.";
+
 let selChar = "Toby", selTheme = "kindness", selAge = "4-5";
 function renderButtons(elId, items, current, setter){
   const el = document.getElementById(elId);
@@ -144,14 +194,24 @@ function renderButtons(elId, items, current, setter){
       b.className = "charcard" + (item === current ? " sel" : "");
       const img = document.createElement("img");
       img.src = IMAGES[item]; img.alt = item;
-      img.onerror = function(){ this.style.display = "none"; };
+      img.onerror = function(){ var f=document.createElement("div"); f.className="imgfallback"; f.textContent=item; this.replaceWith(f); };
       const span = document.createElement("span"); span.textContent = item;
       b.appendChild(img); b.appendChild(span);
     } else {
       b.textContent = item;
       if(item === current) b.className = "sel";
     }
-    b.onclick = function(){ setter(item); renderAll(); };
+    b.setAttribute("aria-pressed", item === current ? "true" : "false");
+    b.onclick = function(){ setter(item); document.getElementById("testValidatorBtn").onclick = function(){
+  const bad = validateStory(UNSAFE_DRAFT);
+  const good = validateStory(SAFE_REVISION);
+  const el = document.getElementById("validatorTest");
+  el.innerHTML = "<strong>Bad draft tested:</strong> \"" + UNSAFE_DRAFT + "\"<br>";
+  renderChecks(el, bad);
+  el.innerHTML += "<br><br><strong>Revised draft tested:</strong> \"" + SAFE_REVISION + "\"<br>";
+  const tmp = document.createElement("div"); renderChecks(tmp, good); el.innerHTML += tmp.innerHTML;
+};
+renderAll(); };
     el.appendChild(b);
   });
 }
@@ -162,7 +222,10 @@ function renderAll(){
 }
 function titleCase(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
 function makeStory(){
-  const name = document.getElementById("childName").value.trim();
+  const rawName = document.getElementById("childName").value.trim();
+  const nameCheck = validateName(rawName);
+  const name = nameCheck.safe;
+  document.getElementById("nameNote").textContent = nameCheck.ok ? "Names must be letters only, up to 20 characters. Anything else is not used — the story uses \"little one\" instead." : "Name was not used — it did not pass the name check. The story uses \"little one\" instead.";
   const intro = selChar + ", " + CHARACTERS[selChar] + ", is ready for a gentle bedtime story about " + selTheme + ".";
   let paras = STORIES[selTheme].slice();
   if(selAge === "2-3") paras = paras.slice(0,2);
@@ -171,6 +234,19 @@ function makeStory(){
   if(selAge === "6-7") text += "\n\nAs the stars came out over the garden, " + selChar + " yawned softly, felt safe and loved, and was ready for a good night's sleep.";
   if(name) text = "For " + name + ", a story about " + selTheme + ".\n\n" + text + "\n\nGoodnight, " + name + ". Sleep tight, and dream sweet dreams.";
   else text += "\n\nGoodnight, little one. Sleep tight, and dream sweet dreams.";
+  let vResult = validateStory(text);
+  if(!vResult.passed){
+    // Fail-closed: do not show a failing draft. Show a known safe fallback, re-check it.
+    text = selChar + ", " + CHARACTERS[selChar] + ", is ready for a gentle bedtime story about " + selTheme + ".\n\n" + STORIES[selTheme][0].split("{C}").join(selChar) + "\n\nGoodnight, little one. Sleep tight, and dream sweet dreams.";
+    vResult = validateStory(text);
+  }
+  if(!vResult.passed){
+    document.getElementById("storyCard").style.display = "none";
+    renderChecks(document.getElementById("validatorLog"), vResult);
+    document.getElementById("validatorLog").scrollIntoView({behavior:"smooth"});
+    return;
+  }
+  renderChecks(document.getElementById("validatorLog"), vResult);
   document.getElementById("storyTitle").textContent = selChar + " — " + titleCase(selTheme) + " (ages " + selAge + ")";
   const simg = document.getElementById("storyImg");
   simg.src = IMAGES[selChar]; simg.alt = selChar + " in the Bellefly Kids Garden"; simg.style.display = "block";
@@ -189,6 +265,9 @@ document.getElementById("readBtn").onclick = function(){
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.rate = 0.9;
+  try{ const vs = window.speechSynthesis.getVoices().filter(function(v){return v.lang && v.lang.indexOf("en")===0;}); if(vs.length) u.voice = vs[0]; }catch(e){}
+  u.onend = function(){ document.getElementById("stopBtn").style.display = "none"; };
+  u.onerror = function(){ document.getElementById("stopBtn").style.display = "none"; };
   window.speechSynthesis.speak(u);
   document.getElementById("stopBtn").style.display = "block";
 };
@@ -200,6 +279,15 @@ document.getElementById("safetyBtn").onclick = function(){
   const box = document.getElementById("safetyBox");
   box.style.display = box.style.display === "none" ? "block" : "none";
   this.textContent = box.style.display === "none" ? "Show the safety check example" : "Hide the safety check example";
+};
+document.getElementById("testValidatorBtn").onclick = function(){
+  const bad = validateStory(UNSAFE_DRAFT);
+  const good = validateStory(SAFE_REVISION);
+  const el = document.getElementById("validatorTest");
+  el.innerHTML = "<strong>Bad draft tested:</strong> \"" + UNSAFE_DRAFT + "\"<br>";
+  renderChecks(el, bad);
+  el.innerHTML += "<br><br><strong>Revised draft tested:</strong> \"" + SAFE_REVISION + "\"<br>";
+  const tmp = document.createElement("div"); renderChecks(tmp, good); el.innerHTML += tmp.innerHTML;
 };
 renderAll();
 </script>
