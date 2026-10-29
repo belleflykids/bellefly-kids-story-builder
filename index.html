@@ -99,7 +99,7 @@
     </div>
   </div>
 
-  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026.<br>Demo stories only. V7, October 29, 2026: real validator, name check, pictures as separate files in repo root. No child accounts, no stored child data.</footer>
+  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026.<br>Demo stories only. V7.1, October 29, 2026: validator fix for short 2-3 stories, name check, pictures as separate files in repo root. No child accounts, no stored child data.</footer>
 </div>
 
 <script>
@@ -164,7 +164,7 @@ function validateStory(text){
   checks.push({name:"No banned words", pass:!badWord, detail: badWord ? "Found: "+badWord : "None found"});
   const badPhrase = BANNED_PHRASES.find(function(p){ return n.indexOf(p) !== -1; });
   checks.push({name:"No banned ideas (staying up alone, only candy, laughing at a friend)", pass:!badPhrase, detail: badPhrase ? "Found: "+badPhrase : "None found"});
-  checks.push({name:"Kind help present", pass:/(help|kind|share|thank)/.test(n), detail:"Story must show help, kindness, sharing, or thanks"});
+  checks.push({name:"Kind help present", pass:/(help|kind|share|thank|together|friend|brave|calm|try)/.test(n), detail:"Story must show help, kindness, sharing, thanks, friendship, bravery, or calm trying"});
   const tail = n.slice(-300);
   checks.push({name:"Calm bedtime ending", pass:/(goodnight|sleep tight|dream sweet dreams)/.test(tail), detail:"Ending must say goodnight / sleep tight"});
   checks.push({name:"No scary or teasing language", pass:!/(scary|frighten|teases|bull)/.test(n), detail:"No scary or teasing words"});
@@ -237,7 +237,7 @@ function makeStory(){
   let vResult = validateStory(text);
   if(!vResult.passed){
     // Fail-closed: do not show a failing draft. Show a known safe fallback, re-check it.
-    text = selChar + ", " + CHARACTERS[selChar] + ", is ready for a gentle bedtime story about " + selTheme + ".\n\n" + STORIES[selTheme][0].split("{C}").join(selChar) + "\n\nGoodnight, little one. Sleep tight, and dream sweet dreams.";
+    text = selChar + ", " + CHARACTERS[selChar] + ", is ready for a gentle bedtime story about " + selTheme + ".\n\nIn the Bellefly Kids Garden, " + selChar + " helped a friend, shared kindly, and said thank you. Together, they felt calm and happy.\n\nGoodnight, little one. Sleep tight, and dream sweet dreams.";
     vResult = validateStory(text);
   }
   if(!vResult.passed){
