@@ -99,7 +99,7 @@
     </div>
   </div>
 
-  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026.<br>Demo stories only. V7.1, October 29, 2026: validator fix for short 2-3 stories, name check, pictures as separate files in repo root. No child accounts, no stored child data.</footer>
+  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026.<br>Demo stories only. V8, October 29, 2026: longer stories (2-3 full base story, 4-5 base + 2 extra, 6-7 base + 3 extra), validator fix, name check, pictures as separate files in repo root. No child accounts, no stored child data.</footer>
 </div>
 
 <script>
@@ -184,6 +184,41 @@ function renderChecks(el, result){
 const UNSAFE_DRAFT = "Toby stays up all night by himself, eats only candy, and laughs when his friend falls down.";
 const SAFE_REVISION = "Toby helps his friend up, shares a healthy snack, and gets ready for bed on time. Goodnight, little one. Sleep tight, and dream sweet dreams.";
 
+const EXTRA_45 = {
+  kindness: [
+    "Later, {C} and the friend walked to the butterfly fountain, where the water sparkled softly in the sunshine. They sat together on a smooth stone and talked about their favourite flowers. {C} shared a quiet smile and said, 'I am glad we helped each other today.' The friend nodded, and they both felt warm and cared for.",
+    "Before dinner, {C} helped set the table and told a grown-up about the basket of flowers. 'Helping felt good,' {C} said. 'It made my friend happy, and it made me happy too.' That night, {C} knew that kindness is not a big, loud thing. It is a small, gentle choice we can make again and again."
+  ],
+  courage: [
+    "Later, {C} tried the new thing again, this time with a friend walking beside them. They took turns, they laughed softly when they wobbled, and they encouraged each other with kind words. {C} felt braver with every gentle try, because a friend was there to share the journey.",
+    "Before bed, {C} told a grown-up, 'I was nervous, and I tried anyway, and I kept trying.' The grown-up smiled and said, 'That is what brave looks like.' {C} felt proud and calm, knowing that courage grows when we try together, one small step at a time."
+  ],
+  sharing: [
+    "Later, {C} and the friend found another friend in the garden, and {C} said, 'You can join us. We can all take turns.' The three friends played together, shared the toy fairly, and thought of a new game where everyone had a part to play. Sharing, {C} saw, made room for more friends, not less fun.",
+    "Before bed, {C} told a grown-up, 'Sharing made the toy more fun, because we enjoyed it together.' The grown-up nodded and said, 'When we share, everyone feels included.' {C} felt happy and peaceful, knowing that a shared joy is a bigger joy."
+  ],
+  patience: [
+    "Later, {C} waited for a turn on the slide, too, and this time waiting felt easier. {C} counted flowers, listened to a bird, and talked quietly with a friend. When the turn came, {C} smiled and said, 'Thank you for waiting with me.' Waiting together, {C} learned, can be kind and calm.",
+    "Before bed, {C} told a grown-up, 'Waiting was hard at first, and then it felt peaceful.' The grown-up said, 'Patience helps us be kind while we wait.' {C} felt calm and proud, knowing that good things are worth waiting for, one gentle moment at a time."
+  ],
+  gratitude: [
+    "Later, {C} made a small thank-you card with flowers drawn in soft colours, and gave it to the friend who had helped. The friend smiled and said, 'Thank you. That means a lot.' {C} felt warm inside, because saying thank you had made them both happy.",
+    "Before bed, {C} whispered thank-yous for a friend, for family, for flowers, and for a calm day. Gratitude, {C} learned, helps us notice the good things we already have, and helps us share that good feeling with others."
+  ],
+  friendship: [
+    "Later, {C} and the new friend built a small garden of stones and flowers together, taking turns and listening to each other's ideas. When they disagreed about where a stone should go, they talked kindly and found a place they both liked. Friendship, {C} saw, grows when we listen and share.",
+    "Before bed, {C} told a grown-up, 'I made a new friend today, and we were kind to each other.' The grown-up smiled and said, 'That is how friendships begin.' {C} felt glad and peaceful, knowing that a warm welcome can change a whole day."
+  ]
+};
+const EXTRA_67 = {
+  kindness: "As {C} walked home through the garden, the flower arch glowed softly in the evening light. {C} thought about the friend, the basket, and the fountain, and felt grateful for a day full of gentle kindness. Kindness, {C} knew now, is something we can carry with us, wherever we go.",
+  courage: "As {C} walked home through the garden, the evening light was soft and golden. {C} thought about the nervous feeling, the small steps, and the friend who stayed close. Courage, {C} knew now, is not about being perfect. It is about trying bravely, again and again, with kind friends beside us.",
+  sharing: "As {C} walked home through the garden, the evening light was soft and golden. {C} thought about the toy, the turns, and the new friend who joined in. Sharing, {C} knew now, does not make joy smaller. It makes joy bigger, because everyone can enjoy together.",
+  patience: "As {C} walked home through the garden, the evening light was soft and golden. {C} thought about the swing, the slide, and the quiet waiting in between. Patience, {C} knew now, is a calm strength. It helps us wait kindly, notice beautiful things, and be ready when our turn comes.",
+  gratitude: "As {C} walked home through the garden, the evening light was soft and golden. {C} thought about the thank-yous, the card, and the warm smiles. Gratitude, {C} knew now, is a quiet light we can carry into the night, and share again tomorrow.",
+  friendship: "As {C} walked home through the garden, the evening light was soft and golden. {C} thought about the new friend, the stones, and the kind talk that solved a small disagreement. Friendship, {C} knew now, grows with listening, sharing, and a warm, welcoming heart."
+};
+
 let selChar = "Toby", selTheme = "kindness", selAge = "4-5";
 function renderButtons(elId, items, current, setter){
   const el = document.getElementById(elId);
@@ -228,7 +263,8 @@ function makeStory(){
   document.getElementById("nameNote").textContent = nameCheck.ok ? "Names must be letters only, up to 20 characters. Anything else is not used — the story uses \"little one\" instead." : "Name was not used — it did not pass the name check. The story uses \"little one\" instead.";
   const intro = selChar + ", " + CHARACTERS[selChar] + ", is ready for a gentle bedtime story about " + selTheme + ".";
   let paras = STORIES[selTheme].slice();
-  if(selAge === "2-3") paras = paras.slice(0,2);
+  if(selAge === "4-5") paras = paras.concat(EXTRA_45[selTheme]);
+  if(selAge === "6-7") paras = paras.concat(EXTRA_45[selTheme], [EXTRA_67[selTheme]]);
   let text = intro + "\n\n" + paras.join("\n\n");
   text = text.split("{C}").join(selChar);
   if(selAge === "6-7") text += "\n\nAs the stars came out over the garden, " + selChar + " yawned softly, felt safe and loved, and was ready for a good night's sleep.";
