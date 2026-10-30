@@ -51,7 +51,21 @@
     <p class="small" style="color:#e6d9f5">Hackathon demo — a parent picks, a parent reads aloud. Children listen, never type.</p>
   </header>
 
-  <div class="card">
+  
+  <div class="card" id="aiCard">
+    <h2>Parent only: Try a new AI draft</h2>
+    <p class="note">This is the live AI step judges can see. It does NOT go straight to a child. A Llama / Meta AI draft is made through a protected server (not from this page), checked by the rule validator, and shown here to a parent first. Only if a parent taps Approve does it become a story to read aloud. If it fails the check, it is blocked, not shown as a story.</p>
+    <p class="note" id="aiStatus">AI draft mode: not connected yet. Fixed, checked stories above still work. This mode activates only when the Meta AI credit and a protected server key are ready.</p>
+    <button class="secondary" id="aiDraftBtn" style="width:100%;padding:12px">Ask the AI for a new draft (parent only)</button>
+    <div id="aiDraftBox" style="display:none;margin-top:12px"></div>
+    <div id="aiValidatorLog" style="margin-top:12px"></div>
+    <div style="display:none" id="aiApproveRow">
+      <button id="aiApproveBtn" style="width:100%;padding:12px;margin-top:12px">Approve this draft — show it as a story</button>
+      <button class="secondary" id="aiDiscardBtn" style="width:100%;padding:12px;margin-top:8px">Discard this draft</button>
+    </div>
+  </div>
+
+<div class="card">
     <h2>1. Pick a character</h2>
     <div class="grid" id="chars"></div>
     <h2 style="margin-top:18px">2. Pick a theme</h2>
@@ -99,7 +113,7 @@
     </div>
   </div>
 
-  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026.<br>Demo stories only. V13, October 29, 2026: kindness, courage, sharing, patience and gratitude stories are now character-specific (8 plots each), friendship shared for now, longer stories, validator fix, name check, pictures as separate files in repo root. No child accounts, no stored child data.</footer>
+  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026.<br>Demo stories only. V15, October 29, 2026: Parent-only AI draft mode added (draft via protected server, validator check, parent Approve/Discard gate — NOT live until Meta AI credit + server key ready; fixed stories still work), ALL 6 qualities character-specific (48 stories), longer stories, validator fix, name check, pictures as separate files in repo root. No child accounts, no stored child data.</footer>
 </div>
 
 <script>
@@ -434,6 +448,49 @@ const GRATITUDE_SPECIFIC = {
   ]
 };
 
+const FRIENDSHIP_SPECIFIC = {
+  "Toby": [
+    "In the Bellefly Kids Garden, Toby met a new friend who did not know anyone yet. The new friend looked a little lonely. Toby smiled, walked over, and said, 'Would you like to play with me?' The new friend's face brightened.",
+    "They played together, learned each other's names, and took turns choosing games. They listened to each other, shared ideas, and were kind when they disagreed. By the end of the day, they were true friends.",
+    "That evening, Toby felt glad. A friend is someone who listens, shares, and cares. Friendship grows, Toby learned, when we welcome others with a warm smile and a kind heart."
+  ],
+  "Emma": [
+    "In the Bellefly Kids Garden, Emma met a new friend who did not know anyone yet. The new friend looked a little lonely. Emma smiled, walked over, and said, 'Would you like to draw with me?' The new friend's face brightened.",
+    "They drew together, learned each other's names, and took turns choosing colours. They listened to each other, shared ideas, and were kind when they disagreed. By the end of the day, they were true friends.",
+    "That evening, Emma felt glad. A friend is someone who listens, shares, and cares. Friendship grows, Emma learned, when we welcome others with a warm smile and a kind heart."
+  ],
+  "Luna": [
+    "In the Bellefly Kids Garden, Luna the baby butterfly met a new friend who did not know anyone yet. The new friend looked a little lonely. Luna fluttered gently over, smiled, and said, 'Would you like to fly with me?' The new friend's face brightened.",
+    "They flew together, learned each other's names, and took turns choosing flowers. They listened to each other, shared ideas, and were kind when they disagreed. By the end of the day, they were true friends.",
+    "That evening, Luna felt glad. A friend is someone who listens, shares, and cares. Friendship grows, Luna learned, when we welcome others with a warm smile and a kind heart."
+  ],
+  "Shelly": [
+    "In the Bellefly Kids Garden, Shelly the baby dragonfly met a new friend who did not know anyone yet. The new friend looked a little lonely. Shelly fluttered gently over, smiled, and said, 'Would you like to fly with me?' The new friend's face brightened.",
+    "They flew together, learned each other's names, and took turns choosing leaves. They listened to each other, shared ideas, and were kind when they disagreed. By the end of the day, they were true friends.",
+    "That evening, Shelly felt glad. A friend is someone who listens, shares, and cares. Friendship grows, Shelly learned, when we welcome others with a warm smile and a kind heart."
+  ],
+  "Benny Baby Bee": [
+    "In the Bellefly Kids Garden, Benny Baby Bee met a new friend who did not know anyone yet. The new friend looked a little lonely. Benny buzzed gently over, smiled, and said, 'Would you like to visit flowers with me?' The new friend's face brightened.",
+    "They visited together, learned each other's names, and took turns choosing flowers. They listened to each other, shared ideas, and were kind when they disagreed. By the end of the day, they were true friends.",
+    "That evening, Benny felt glad. A friend is someone who listens, shares, and cares. Friendship grows, Benny learned, when we welcome others with a warm smile and a kind heart."
+  ],
+  "Cory": [
+    "In the Bellefly Kids Garden, Cory the little caterpillar met a new friend who did not know anyone yet. The new friend looked a little lonely. Cory crawled gently over, smiled, and said, 'Would you like to play with me?' The new friend's face brightened.",
+    "They played together, learned each other's names, and took turns choosing leaves. They listened to each other, shared ideas, and were kind when they disagreed. By the end of the day, they were true friends.",
+    "That evening, Cory felt glad. A friend is someone who listens, shares, and cares. Friendship grows, Cory learned, when we welcome others with a warm smile and a kind heart."
+  ],
+  "Pippa": [
+    "In the Bellefly Kids Garden, Pippa met a new friend who did not know anyone yet. The new friend looked a little lonely. Pippa smiled, walked over, and said, 'Would you like to dance with me?' The new friend's face brightened.",
+    "They danced together, learned each other's names, and took turns choosing dances. They listened to each other, shared ideas, and were kind when they disagreed. By the end of the day, they were true friends.",
+    "That evening, Pippa felt glad. A friend is someone who listens, shares, and cares. Friendship grows, Pippa learned, when we welcome others with a warm smile and a kind heart."
+  ],
+  "Taylor Shift": [
+    "In the Bellefly Kids Garden, Taylor Shift the pink train met a new friend who did not know anyone yet. The new friend looked a little lonely. Taylor Shift stopped gently, smiled, and said, 'Would you like to ride with me?' The new friend's face brightened.",
+    "They rode together, learned each other's names, and took turns choosing journeys. They listened to each other, shared ideas, and were kind when they disagreed. By the end of the day, they were true friends.",
+    "That evening, Taylor Shift felt glad. A friend is someone who listens, shares, and cares. Friendship grows, Taylor Shift learned, when we welcome others with a warm smile and a kind heart."
+  ]
+};
+
 let selChar = "Toby", selTheme = "kindness", selAge = "4-5";
 function renderButtons(elId, items, current, setter){
   const el = document.getElementById(elId);
@@ -461,6 +518,52 @@ function renderButtons(elId, items, current, setter){
   el.innerHTML += "<br><br><strong>Revised draft tested:</strong> \"" + SAFE_REVISION + "\"<br>";
   const tmp = document.createElement("div"); renderChecks(tmp, good); el.innerHTML += tmp.innerHTML;
 };
+
+let pendingAiDraft = "";
+document.getElementById("aiDraftBtn").onclick = async function(){
+  const status = document.getElementById("aiStatus");
+  status.textContent = "Asking the protected AI server for a draft…";
+  try{
+    const res = await fetch("/api/draft", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({character: selChar, theme: selTheme, age: selAge})});
+    if(!res.ok) throw new Error("AI server not connected");
+    const data = await res.json();
+    pendingAiDraft = data.draft || "";
+    if(!pendingAiDraft) throw new Error("Empty draft");
+    const v = validateStory(pendingAiDraft);
+    document.getElementById("aiDraftBox").style.display = "block";
+    document.getElementById("aiDraftBox").textContent = pendingAiDraft;
+    renderChecks(document.getElementById("aiValidatorLog"), v);
+    if(!v.passed){
+      status.textContent = "AI draft BLOCKED by the validator. It was not shown as a story. A parent can discard it.";
+      pendingAiDraft = "";
+      document.getElementById("aiApproveRow").style.display = "none";
+    } else {
+      status.textContent = "AI draft passed the rule checks. Parent preview only — tap Approve to show it as a story, or Discard.";
+      document.getElementById("aiApproveRow").style.display = "block";
+    }
+  }catch(e){
+    status.textContent = "AI draft mode: not connected yet. Fixed, checked stories above still work. This mode activates only when the Meta AI credit and a protected server key are ready.";
+    document.getElementById("aiApproveRow").style.display = "none";
+  }
+};
+document.getElementById("aiApproveBtn").onclick = function(){
+  if(!pendingAiDraft) return;
+  document.getElementById("storyTitle").textContent = selChar + " — " + titleCase(selTheme) + " (ages " + selAge + ") — parent-approved AI draft";
+  document.getElementById("storyText").textContent = pendingAiDraft;
+  document.getElementById("storyCard").style.display = "block";
+  document.getElementById("storyCard").scrollIntoView({behavior:"smooth"});
+  pendingAiDraft = "";
+  document.getElementById("aiApproveRow").style.display = "none";
+};
+document.getElementById("aiDiscardBtn").onclick = function(){
+  pendingAiDraft = "";
+  document.getElementById("aiDraftBox").style.display = "none";
+  document.getElementById("aiDraftBox").textContent = "";
+  document.getElementById("aiValidatorLog").innerHTML = "";
+  document.getElementById("aiApproveRow").style.display = "none";
+  document.getElementById("aiStatus").textContent = "Draft discarded. It was not shown as a story.";
+};
+
 renderAll(); };
     el.appendChild(b);
   });
@@ -483,6 +586,7 @@ function makeStory(){
   else if(selTheme === "sharing" && SHARING_SPECIFIC[selChar]) paras = SHARING_SPECIFIC[selChar].slice();
   else if(selTheme === "patience" && PATIENCE_SPECIFIC[selChar]) paras = PATIENCE_SPECIFIC[selChar].slice();
   else if(selTheme === "gratitude" && GRATITUDE_SPECIFIC[selChar]) paras = GRATITUDE_SPECIFIC[selChar].slice();
+  else if(selTheme === "friendship" && FRIENDSHIP_SPECIFIC[selChar]) paras = FRIENDSHIP_SPECIFIC[selChar].slice();
   else paras = STORIES[selTheme].slice();
   if(selAge === "4-5") paras = paras.concat(EXTRA_45[selTheme]);
   if(selAge === "6-7") paras = paras.concat(EXTRA_45[selTheme], [EXTRA_67[selTheme]]);
