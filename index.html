@@ -99,7 +99,7 @@
     </div>
   </div>
 
-  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026.<br>Demo stories only. V8, October 29, 2026: longer stories (2-3 full base story, 4-5 base + 2 extra, 6-7 base + 3 extra), validator fix, name check, pictures as separate files in repo root. No child accounts, no stored child data.</footer>
+  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026.<br>Demo stories only. V13, October 29, 2026: kindness, courage, sharing, patience and gratitude stories are now character-specific (8 plots each), friendship shared for now, longer stories, validator fix, name check, pictures as separate files in repo root. No child accounts, no stored child data.</footer>
 </div>
 
 <script>
@@ -219,6 +219,221 @@ const EXTRA_67 = {
   friendship: "As {C} walked home through the garden, the evening light was soft and golden. {C} thought about the new friend, the stones, and the kind talk that solved a small disagreement. Friendship, {C} knew now, grows with listening, sharing, and a warm, welcoming heart."
 };
 
+const KINDNESS_SPECIFIC = {
+  "Toby": [
+    "In the Bellefly Kids Garden, on a soft, sunny morning, Toby found a friend who had dropped a basket of flowers. The friend looked sad, so Toby knelt down, smiled warmly, and said, 'Let me help you.' Together, they picked up every flower, one by one, until the basket was full again.",
+    "The friend smiled and said, 'Thank you. That was very kind.' Toby felt happy, not because of a prize, but because helping felt good. They walked together along the garden path, sharing quiet, happy talk, and enjoying the flowers and the gentle breeze.",
+    "That evening, Toby thought about the day and felt glad. A small kind act had made a big difference to a friend. Kindness, Toby learned, is something we can give every day, in small, gentle ways."
+  ],
+  "Emma": [
+    "In the Bellefly Kids Garden, on a soft, sunny morning, Emma found a friend who had dropped a box of art supplies. Crayons and paper fluttered onto the path, and the friend looked worried. Emma smiled warmly, picked up the crayons one by one, and said, 'Let me help you. We can tidy this together.'",
+    "The friend smiled and said, 'Thank you. That was very kind.' Emma felt happy, not because of a prize, but because helping felt good. Together, they drew a picture of flowers and butterflies, sharing colours and taking turns, and enjoying the quiet, happy time together.",
+    "That evening, Emma thought about the day and felt glad. A small kind act had made a big difference to a friend. Kindness, Emma learned, is something we can give every day, in small, gentle ways, like sharing colours and helping tidy up."
+  ],
+  "Luna": [
+    "In the Bellefly Kids Garden, on a soft, sunny morning, Luna the baby butterfly found a friend who had dropped a basket of flower petals. The petals fluttered in the breeze, and the friend looked sad. Luna fluttered gently, gathered the petals softly with her wings, and said, 'Let me help you.'",
+    "The friend smiled and said, 'Thank you. That was very kind.' Luna felt happy, not because of a prize, but because helping felt good. Together, they placed the petals back in the basket, one by one, and enjoyed the flowers and the gentle breeze in the garden.",
+    "That evening, Luna thought about the day and felt glad. A small kind act had made a big difference to a friend. Kindness, Luna learned, is something we can give every day, in small, gentle ways, even with soft wings and a kind heart."
+  ],
+  "Shelly": [
+    "In the Bellefly Kids Garden, on a soft, sunny morning, Shelly the baby dragonfly found a friend who had dropped a basket of sparkly leaves. The leaves fluttered onto the path, and the friend looked sad. Shelly fluttered gently, caught the leaves softly, and said, 'Let me help you.'",
+    "The friend smiled and said, 'Thank you. That was very kind.' Shelly felt happy, not because of a prize, but because helping felt good. Together, they placed the leaves back in the basket, one by one, and enjoyed the flowers and the gentle breeze in the garden.",
+    "That evening, Shelly thought about the day and felt glad. A small kind act had made a big difference to a friend. Kindness, Shelly learned, is something we can give every day, in small, gentle ways."
+  ],
+  "Benny Baby Bee": [
+    "In the Bellefly Kids Garden, on a soft, sunny morning, Benny Baby Bee found a friend who had dropped a basket of honey flowers. The flowers tumbled onto the path, and the friend looked sad. Benny buzzed gently, gathered the flowers softly, and said, 'Let me help you.'",
+    "The friend smiled and said, 'Thank you. That was very kind.' Benny felt happy, not because of a prize, but because helping felt good. Together, they placed the flowers back in the basket, one by one, and shared a healthy snack, enjoying the flowers and the gentle breeze.",
+    "That evening, Benny thought about the day and felt glad. A small kind act had made a big difference to a friend. Kindness, Benny learned, is something we can give every day, in small, gentle ways."
+  ],
+  "Cory": [
+    "In the Bellefly Kids Garden, on a soft, sunny morning, Cory the little caterpillar found a friend who had dropped a basket of green leaves. The leaves fluttered onto the path, and the friend looked sad. Cory crawled gently, gathered the leaves softly, and said, 'Let me help you.'",
+    "The friend smiled and said, 'Thank you. That was very kind.' Cory felt happy, not because of a prize, but because helping felt good. Together, they placed the leaves back in the basket, one by one, and enjoyed the flowers and the gentle breeze in the garden.",
+    "That evening, Cory thought about the day and felt glad. A small kind act had made a big difference to a friend. Kindness, Cory learned, is something we can give every day, in small, gentle ways, one slow and steady step at a time."
+  ],
+  "Pippa": [
+    "In the Bellefly Kids Garden, on a soft, sunny morning, Pippa found a friend who had dropped a basket of ribbons and flowers. The ribbons fluttered onto the path, and the friend looked sad. Pippa knelt down, smiled warmly, and said, 'Let me help you.' Together, they picked up every ribbon and flower, one by one, until the basket was full again.",
+    "The friend smiled and said, 'Thank you. That was very kind.' Pippa felt happy, not because of a prize, but because helping felt good. They walked together along the garden path, sharing quiet, happy talk, and enjoying the flowers and the gentle breeze.",
+    "That evening, Pippa thought about the day and felt glad. A small kind act had made a big difference to a friend. Kindness, Pippa learned, is something we can give every day, in small, gentle ways."
+  ],
+  "Taylor Shift": [
+    "In the Bellefly Kids Garden, on a soft, sunny morning, Taylor Shift the pink train found a friend who had dropped a basket of flowers beside the track. The flowers tumbled onto the path, and the friend looked sad. Taylor Shift stopped gently, smiled warmly, and said, 'Let me help you. I can carry them in my passenger car.'",
+    "The friend smiled and said, 'Thank you. That was very kind.' Taylor Shift felt happy, not because of a prize, but because helping felt good. Together, they placed the flowers safely in the car, one by one, and rode slowly along the garden track, sharing quiet, happy talk, and enjoying the flowers and the gentle breeze.",
+    "That evening, Taylor Shift thought about the day and felt glad. A small kind act had made a big difference to a friend. Kindness, Taylor Shift learned, is something we can give every day, in small, gentle ways, even on a train journey."
+  ]
+};
+
+const COURAGE_SPECIFIC = {
+  "Toby": [
+    "In the Bellefly Kids Garden, Toby wanted to try building a tall tower of soft blocks, but felt a little shy. A friend stood nearby and said, 'I will stay with you. We can try together.' Toby took a slow, deep breath and placed one block gently on top of another.",
+    "Step by step, Toby kept going. The tower wobbled, but the friend cheered softly, and Toby kept trying. Soon, the tower stood tall, and Toby felt proud — not for being perfect, but for trying with a brave heart.",
+    "That evening, Toby smiled and said, 'I was a little nervous, and I tried anyway.' Courage, Toby learned, is not about never feeling nervous. It is about trying, one gentle step at a time, with friends beside us."
+  ],
+  "Emma": [
+    "In the Bellefly Kids Garden, Emma wanted to sing a new song for her friends, but felt a little shy. A friend stood nearby and said, 'I will stay with you. We can sing together.' Emma took a slow, deep breath and sang the first soft note.",
+    "Step by step, Emma kept singing. Her voice wobbled a little at first, but the friend sang softly beside her, and Emma kept trying. Soon, the song flowed gently, and Emma felt proud — not for being perfect, but for trying with a brave heart.",
+    "That evening, Emma smiled and said, 'I was a little nervous, and I tried anyway.' Courage, Emma learned, is not about never feeling nervous. It is about trying, one gentle step at a time, with friends beside us."
+  ],
+  "Luna": [
+    "In the Bellefly Kids Garden, Luna the baby butterfly wanted to fly a little higher than before, but felt a little shy. A friend stood nearby and said, 'I will stay with you. We can try together.' Luna took a slow, deep breath and fluttered her wings gently.",
+    "Step by step, Luna fluttered a little higher. Her wings wobbled a little at first, but the friend cheered softly, and Luna kept trying. Soon, Luna flew in a gentle circle above the flowers, and felt proud — not for being perfect, but for trying with a brave heart.",
+    "That evening, Luna smiled and said, 'I was a little nervous, and I tried anyway.' Courage, Luna learned, is not about never feeling nervous. It is about trying, one gentle step at a time, with friends beside us."
+  ],
+  "Shelly": [
+    "In the Bellefly Kids Garden, Shelly the baby dragonfly wanted to fly over the butterfly fountain, but felt a little shy. A friend stood nearby and said, 'I will stay with you. We can try together.' Shelly took a slow, deep breath and fluttered her wings gently.",
+    "Step by step, Shelly fluttered a little further. Her wings wobbled a little at first, but the friend cheered softly, and Shelly kept trying. Soon, Shelly flew gently over the fountain, and felt proud — not for being perfect, but for trying with a brave heart.",
+    "That evening, Shelly smiled and said, 'I was a little nervous, and I tried anyway.' Courage, Shelly learned, is not about never feeling nervous. It is about trying, one gentle step at a time, with friends beside us."
+  ],
+  "Benny Baby Bee": [
+    "In the Bellefly Kids Garden, Benny Baby Bee wanted to buzz to a new flower far across the garden, but felt a little shy. A friend stood nearby and said, 'I will stay with you. We can try together.' Benny took a slow, deep breath and buzzed gently into the air.",
+    "Step by step, Benny buzzed a little further. His wings wobbled a little at first, but the friend cheered softly, and Benny kept trying. Soon, Benny reached the new flower, and felt proud — not for being perfect, but for trying with a brave heart.",
+    "That evening, Benny smiled and said, 'I was a little nervous, and I tried anyway.' Courage, Benny learned, is not about never feeling nervous. It is about trying, one gentle step at a time, with friends beside us."
+  ],
+  "Cory": [
+    "In the Bellefly Kids Garden, Cory the little caterpillar wanted to climb a tall green leaf, but felt a little shy. A friend stood nearby and said, 'I will stay with you. We can try together.' Cory took a slow, deep breath and crawled gently onto the leaf.",
+    "Step by step, Cory crawled a little higher. His little feet wobbled a little at first, but the friend cheered softly, and Cory kept trying. Soon, Cory reached the top of the leaf, and felt proud — not for being perfect, but for trying with a brave heart.",
+    "That evening, Cory smiled and said, 'I was a little nervous, and I tried anyway.' Courage, Cory learned, is not about never feeling nervous. It is about trying, one gentle step at a time, with friends beside us."
+  ],
+  "Pippa": [
+    "In the Bellefly Kids Garden, Pippa wanted to dance a new dance for her friends, but felt a little shy. A friend stood nearby and said, 'I will stay with you. We can dance together.' Pippa took a slow, deep breath and took one gentle step.",
+    "Step by step, Pippa danced a little more. Her steps wobbled a little at first, but the friend danced softly beside her, and Pippa kept trying. Soon, the dance flowed gently, and Pippa felt proud — not for being perfect, but for trying with a brave heart.",
+    "That evening, Pippa smiled and said, 'I was a little nervous, and I tried anyway.' Courage, Pippa learned, is not about never feeling nervous. It is about trying, one gentle step at a time, with friends beside us."
+  ],
+  "Taylor Shift": [
+    "In the Bellefly Kids Garden, Taylor Shift the pink train wanted to try a new track over a small bridge, but felt a little shy. A friend stood nearby and said, 'I will stay with you. We can try together.' Taylor Shift took a slow, deep breath and rolled gently onto the new track.",
+    "Step by step, Taylor Shift rolled a little further. Her wheels wobbled a little at first, but the friend cheered softly, and Taylor Shift kept trying. Soon, Taylor Shift crossed the bridge gently, and felt proud — not for being perfect, but for trying with a brave heart.",
+    "That evening, Taylor Shift smiled and said, 'I was a little nervous, and I tried anyway.' Courage, Taylor Shift learned, is not about never feeling nervous. It is about trying, one gentle step at a time, with friends beside us."
+  ]
+};
+
+const SHARING_SPECIFIC = {
+  "Toby": [
+    "In the Bellefly Kids Garden, Toby had a favourite ball to play with, and a friend wanted a turn too. At first, Toby held it close. Then Toby remembered how good it feels when someone shares, and said, 'We can take turns. You go first.'",
+    "They played together, taking turns and laughing softly. The ball was even more fun when it was shared, because they could enjoy it together and think of new games to play.",
+    "That evening, Toby felt happy and peaceful. Sharing had not taken the fun away — it had made the fun bigger. When we share, everyone can enjoy, and everyone feels included."
+  ],
+  "Emma": [
+    "In the Bellefly Kids Garden, Emma had a favourite set of crayons to draw with, and a friend wanted a turn too. At first, Emma held them close. Then Emma remembered how good it feels when someone shares, and said, 'We can take turns. You go first.'",
+    "They drew together, taking turns and laughing softly. The crayons were even more fun when they were shared, because they could enjoy them together and think of new pictures to draw.",
+    "That evening, Emma felt happy and peaceful. Sharing had not taken the fun away — it had made the fun bigger. When we share, everyone can enjoy, and everyone feels included."
+  ],
+  "Luna": [
+    "In the Bellefly Kids Garden, Luna the baby butterfly had a favourite flower to rest on, and a friend wanted a turn too. At first, Luna held the flower close. Then Luna remembered how good it feels when someone shares, and said, 'We can take turns. You go first.'",
+    "They rested together, taking turns and laughing softly. The flower was even more fun when it was shared, because they could enjoy it together and think of new games to play.",
+    "That evening, Luna felt happy and peaceful. Sharing had not taken the fun away — it had made the fun bigger. When we share, everyone can enjoy, and everyone feels included."
+  ],
+  "Shelly": [
+    "In the Bellefly Kids Garden, Shelly the baby dragonfly had a favourite sparkly leaf to play with, and a friend wanted a turn too. At first, Shelly held it close. Then Shelly remembered how good it feels when someone shares, and said, 'We can take turns. You go first.'",
+    "They played together, taking turns and laughing softly. The leaf was even more fun when it was shared, because they could enjoy it together and think of new games to play.",
+    "That evening, Shelly felt happy and peaceful. Sharing had not taken the fun away — it had made the fun bigger. When we share, everyone can enjoy, and everyone feels included."
+  ],
+  "Benny Baby Bee": [
+    "In the Bellefly Kids Garden, Benny Baby Bee had a favourite honey flower to visit, and a friend wanted a turn too. At first, Benny held it close. Then Benny remembered how good it feels when someone shares, and said, 'We can take turns. You go first.'",
+    "They visited together, taking turns and laughing softly. The flower was even more fun when it was shared, because they could enjoy it together and think of new games to play.",
+    "That evening, Benny felt happy and peaceful. Sharing had not taken the fun away — it had made the fun bigger. When we share, everyone can enjoy, and everyone feels included."
+  ],
+  "Cory": [
+    "In the Bellefly Kids Garden, Cory the little caterpillar had a favourite green leaf to munch on, and a friend wanted a turn too. At first, Cory held it close. Then Cory remembered how good it feels when someone shares, and said, 'We can take turns. You go first.'",
+    "They munched together, taking turns and laughing softly. The leaf was even more fun when it was shared, because they could enjoy it together and think of new games to play.",
+    "That evening, Cory felt happy and peaceful. Sharing had not taken the fun away — it had made the fun bigger. When we share, everyone can enjoy, and everyone feels included."
+  ],
+  "Pippa": [
+    "In the Bellefly Kids Garden, Pippa had a favourite ribbon to play with, and a friend wanted a turn too. At first, Pippa held it close. Then Pippa remembered how good it feels when someone shares, and said, 'We can take turns. You go first.'",
+    "They played together, taking turns and laughing softly. The ribbon was even more fun when it was shared, because they could enjoy it together and think of new games to play.",
+    "That evening, Pippa felt happy and peaceful. Sharing had not taken the fun away — it had made the fun bigger. When we share, everyone can enjoy, and everyone feels included."
+  ],
+  "Taylor Shift": [
+    "In the Bellefly Kids Garden, Taylor Shift the pink train had a favourite passenger car to ride in, and a friend wanted a turn too. At first, Taylor Shift held it close. Then Taylor Shift remembered how good it feels when someone shares, and said, 'We can take turns. You go first.'",
+    "They rode together, taking turns and laughing softly. The car was even more fun when it was shared, because they could enjoy it together and think of new journeys to take.",
+    "That evening, Taylor Shift felt happy and peaceful. Sharing had not taken the fun away — it had made the fun bigger. When we share, everyone can enjoy, and everyone feels included."
+  ]
+};
+
+const PATIENCE_SPECIFIC = {
+  "Toby": [
+    "In the Bellefly Kids Garden, Toby wanted a turn on the swing, but a friend was already swinging. Toby felt a little impatient. Instead of pushing, Toby sat on a soft patch of grass, watched the flowers, and waited calmly for a turn.",
+    "While waiting, Toby noticed a butterfly resting on a flower, and a bird singing in a tree. Waiting, Toby learned, can be a quiet time to notice beautiful things. Soon, the friend smiled and said, 'Your turn now.'",
+    "That evening, Toby felt calm and proud. Patience had helped Toby wait kindly, without rushing or fussing. Good things, Toby learned, are worth waiting for, one gentle moment at a time."
+  ],
+  "Emma": [
+    "In the Bellefly Kids Garden, Emma wanted a turn to draw on the big paper, but a friend was already drawing. Emma felt a little impatient. Instead of pushing, Emma sat on a soft patch of grass, watched the flowers, and waited calmly for a turn.",
+    "While waiting, Emma noticed a butterfly resting on a flower, and a bird singing in a tree. Waiting, Emma learned, can be a quiet time to notice beautiful things. Soon, the friend smiled and said, 'Your turn now.'",
+    "That evening, Emma felt calm and proud. Patience had helped Emma wait kindly, without rushing or fussing. Good things, Emma learned, are worth waiting for, one gentle moment at a time."
+  ],
+  "Luna": [
+    "In the Bellefly Kids Garden, Luna the baby butterfly wanted a turn on a sunny flower, but a friend was already resting there. Luna felt a little impatient. Instead of pushing, Luna fluttered to a soft leaf nearby, watched the flowers, and waited calmly for a turn.",
+    "While waiting, Luna noticed a butterfly resting on another flower, and a bird singing in a tree. Waiting, Luna learned, can be a quiet time to notice beautiful things. Soon, the friend smiled and said, 'Your turn now.'",
+    "That evening, Luna felt calm and proud. Patience had helped Luna wait kindly, without rushing or fussing. Good things, Luna learned, are worth waiting for, one gentle moment at a time."
+  ],
+  "Shelly": [
+    "In the Bellefly Kids Garden, Shelly the baby dragonfly wanted a turn over the fountain, but a friend was already flying there. Shelly felt a little impatient. Instead of pushing, Shelly fluttered to a soft leaf nearby, watched the flowers, and waited calmly for a turn.",
+    "While waiting, Shelly noticed a butterfly resting on a flower, and a bird singing in a tree. Waiting, Shelly learned, can be a quiet time to notice beautiful things. Soon, the friend smiled and said, 'Your turn now.'",
+    "That evening, Shelly felt calm and proud. Patience had helped Shelly wait kindly, without rushing or fussing. Good things, Shelly learned, are worth waiting for, one gentle moment at a time."
+  ],
+  "Benny Baby Bee": [
+    "In the Bellefly Kids Garden, Benny Baby Bee wanted a turn at a honey flower, but a friend was already visiting it. Benny felt a little impatient. Instead of pushing, Benny buzzed to a soft leaf nearby, watched the flowers, and waited calmly for a turn.",
+    "While waiting, Benny noticed a butterfly resting on a flower, and a bird singing in a tree. Waiting, Benny learned, can be a quiet time to notice beautiful things. Soon, the friend smiled and said, 'Your turn now.'",
+    "That evening, Benny felt calm and proud. Patience had helped Benny wait kindly, without rushing or fussing. Good things, Benny learned, are worth waiting for, one gentle moment at a time."
+  ],
+  "Cory": [
+    "In the Bellefly Kids Garden, Cory the little caterpillar wanted a turn on a green leaf, but a friend was already munching there. Cory felt a little impatient. Instead of pushing, Cory crawled to a soft patch of grass nearby, watched the flowers, and waited calmly for a turn.",
+    "While waiting, Cory noticed a butterfly resting on a flower, and a bird singing in a tree. Waiting, Cory learned, can be a quiet time to notice beautiful things. Soon, the friend smiled and said, 'Your turn now.'",
+    "That evening, Cory felt calm and proud. Patience had helped Cory wait kindly, without rushing or fussing. Good things, Cory learned, are worth waiting for, one gentle moment at a time."
+  ],
+  "Pippa": [
+    "In the Bellefly Kids Garden, Pippa wanted a turn on the slide, but a friend was already sliding. Pippa felt a little impatient. Instead of pushing, Pippa sat on a soft patch of grass, watched the flowers, and waited calmly for a turn.",
+    "While waiting, Pippa noticed a butterfly resting on a flower, and a bird singing in a tree. Waiting, Pippa learned, can be a quiet time to notice beautiful things. Soon, the friend smiled and said, 'Your turn now.'",
+    "That evening, Pippa felt calm and proud. Patience had helped Pippa wait kindly, without rushing or fussing. Good things, Pippa learned, are worth waiting for, one gentle moment at a time."
+  ],
+  "Taylor Shift": [
+    "In the Bellefly Kids Garden, Taylor Shift the pink train wanted a turn on the main track, but a friend was already riding there. Taylor Shift felt a little impatient. Instead of pushing, Taylor Shift waited gently at the station, watched the flowers, and waited calmly for a turn.",
+    "While waiting, Taylor Shift noticed a butterfly resting on a flower, and a bird singing in a tree. Waiting, Taylor Shift learned, can be a quiet time to notice beautiful things. Soon, the friend smiled and said, 'Your turn now.'",
+    "That evening, Taylor Shift felt calm and proud. Patience had helped Taylor Shift wait kindly, without rushing or fussing. Good things, Taylor Shift learned, are worth waiting for, one gentle moment at a time."
+  ]
+};
+
+const GRATITUDE_SPECIFIC = {
+  "Toby": [
+    "In the Bellefly Kids Garden, Toby thought about all the good things in the day: a friend who helped build a tower, a warm lunch, flowers in the sunshine, and a kind word from a grown-up. Toby said, 'Thank you,' out loud, and it felt warm and good.",
+    "Toby thanked the friend for helping, thanked the grown-up for the kind word, and smiled at the flowers. Saying thank you, Toby learned, helps us notice the good things we already have, instead of only wanting more.",
+    "That evening, before bed, Toby whispered three quiet thank-yous: for a friend, for family, and for a calm, happy day. Gratitude made the day feel full and peaceful, like a soft blanket at bedtime."
+  ],
+  "Emma": [
+    "In the Bellefly Kids Garden, Emma thought about all the good things in the day: a friend who shared crayons, a warm lunch, flowers in the sunshine, and a kind word from a grown-up. Emma said, 'Thank you,' out loud, and it felt warm and good.",
+    "Emma thanked the friend for sharing, thanked the grown-up for the kind word, and smiled at the flowers. Saying thank you, Emma learned, helps us notice the good things we already have, instead of only wanting more.",
+    "That evening, before bed, Emma whispered three quiet thank-yous: for a friend, for family, and for a calm, happy day. Gratitude made the day feel full and peaceful, like a soft blanket at bedtime."
+  ],
+  "Luna": [
+    "In the Bellefly Kids Garden, Luna the baby butterfly thought about all the good things in the day: a friend who shared a flower, a warm sunshine, flowers in the breeze, and a kind word from a grown-up. Luna said, 'Thank you,' out loud, and it felt warm and good.",
+    "Luna thanked the friend for sharing, thanked the grown-up for the kind word, and smiled at the flowers. Saying thank you, Luna learned, helps us notice the good things we already have, instead of only wanting more.",
+    "That evening, before bed, Luna whispered three quiet thank-yous: for a friend, for family, and for a calm, happy day. Gratitude made the day feel full and peaceful, like a soft blanket at bedtime."
+  ],
+  "Shelly": [
+    "In the Bellefly Kids Garden, Shelly the baby dragonfly thought about all the good things in the day: a friend who shared a leaf, a warm sunshine, flowers in the breeze, and a kind word from a grown-up. Shelly said, 'Thank you,' out loud, and it felt warm and good.",
+    "Shelly thanked the friend for sharing, thanked the grown-up for the kind word, and smiled at the flowers. Saying thank you, Shelly learned, helps us notice the good things we already have, instead of only wanting more.",
+    "That evening, before bed, Shelly whispered three quiet thank-yous: for a friend, for family, and for a calm, happy day. Gratitude made the day feel full and peaceful, like a soft blanket at bedtime."
+  ],
+  "Benny Baby Bee": [
+    "In the Bellefly Kids Garden, Benny Baby Bee thought about all the good things in the day: a friend who shared a flower, a warm sunshine, honey flowers in the breeze, and a kind word from a grown-up. Benny said, 'Thank you,' out loud, and it felt warm and good.",
+    "Benny thanked the friend for sharing, thanked the grown-up for the kind word, and smiled at the flowers. Saying thank you, Benny learned, helps us notice the good things we already have, instead of only wanting more.",
+    "That evening, before bed, Benny whispered three quiet thank-yous: for a friend, for family, and for a calm, happy day. Gratitude made the day feel full and peaceful, like a soft blanket at bedtime."
+  ],
+  "Cory": [
+    "In the Bellefly Kids Garden, Cory the little caterpillar thought about all the good things in the day: a friend who shared a leaf, a warm sunshine, green leaves in the breeze, and a kind word from a grown-up. Cory said, 'Thank you,' out loud, and it felt warm and good.",
+    "Cory thanked the friend for sharing, thanked the grown-up for the kind word, and smiled at the flowers. Saying thank you, Cory learned, helps us notice the good things we already have, instead of only wanting more.",
+    "That evening, before bed, Cory whispered three quiet thank-yous: for a friend, for family, and for a calm, happy day. Gratitude made the day feel full and peaceful, like a soft blanket at bedtime."
+  ],
+  "Pippa": [
+    "In the Bellefly Kids Garden, Pippa thought about all the good things in the day: a friend who shared a ribbon, a warm lunch, flowers in the sunshine, and a kind word from a grown-up. Pippa said, 'Thank you,' out loud, and it felt warm and good.",
+    "Pippa thanked the friend for sharing, thanked the grown-up for the kind word, and smiled at the flowers. Saying thank you, Pippa learned, helps us notice the good things we already have, instead of only wanting more.",
+    "That evening, before bed, Pippa whispered three quiet thank-yous: for a friend, for family, and for a calm, happy day. Gratitude made the day feel full and peaceful, like a soft blanket at bedtime."
+  ],
+  "Taylor Shift": [
+    "In the Bellefly Kids Garden, Taylor Shift the pink train thought about all the good things in the day: a friend who shared a ride, a warm sunshine, flowers along the track, and a kind word from a grown-up. Taylor Shift said, 'Thank you,' out loud, and it felt warm and good.",
+    "Taylor Shift thanked the friend for sharing, thanked the grown-up for the kind word, and smiled at the flowers. Saying thank you, Taylor Shift learned, helps us notice the good things we already have, instead of only wanting more.",
+    "That evening, before bed, Taylor Shift whispered three quiet thank-yous: for a friend, for family, and for a calm, happy day. Gratitude made the day feel full and peaceful, like a soft blanket at bedtime."
+  ]
+};
+
 let selChar = "Toby", selTheme = "kindness", selAge = "4-5";
 function renderButtons(elId, items, current, setter){
   const el = document.getElementById(elId);
@@ -262,7 +477,13 @@ function makeStory(){
   const name = nameCheck.safe;
   document.getElementById("nameNote").textContent = nameCheck.ok ? "Names must be letters only, up to 20 characters. Anything else is not used — the story uses \"little one\" instead." : "Name was not used — it did not pass the name check. The story uses \"little one\" instead.";
   const intro = selChar + ", " + CHARACTERS[selChar] + ", is ready for a gentle bedtime story about " + selTheme + ".";
-  let paras = STORIES[selTheme].slice();
+  let paras;
+  if(selTheme === "kindness" && KINDNESS_SPECIFIC[selChar]) paras = KINDNESS_SPECIFIC[selChar].slice();
+  else if(selTheme === "courage" && COURAGE_SPECIFIC[selChar]) paras = COURAGE_SPECIFIC[selChar].slice();
+  else if(selTheme === "sharing" && SHARING_SPECIFIC[selChar]) paras = SHARING_SPECIFIC[selChar].slice();
+  else if(selTheme === "patience" && PATIENCE_SPECIFIC[selChar]) paras = PATIENCE_SPECIFIC[selChar].slice();
+  else if(selTheme === "gratitude" && GRATITUDE_SPECIFIC[selChar]) paras = GRATITUDE_SPECIFIC[selChar].slice();
+  else paras = STORIES[selTheme].slice();
   if(selAge === "4-5") paras = paras.concat(EXTRA_45[selTheme]);
   if(selAge === "6-7") paras = paras.concat(EXTRA_45[selTheme], [EXTRA_67[selTheme]]);
   let text = intro + "\n\n" + paras.join("\n\n");
