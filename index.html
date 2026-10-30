@@ -100,7 +100,7 @@
       <li><strong>Name check:</strong> a child's first name is optional, never stored, and is only used for that one story if it passes the name check.</li>
       <li><strong>Fail-closed:</strong> if anything is in doubt, the draft is blocked and a safe, checked story is shown instead.</li>
     </ul>
-    <p class="note">Known limit, honestly shown: this is a word-and-phrase check. It cannot catch every harmful meaning — the safety test suite below shows 3 known gaps it misses.</p>
+    <p class="note">Known limit, honestly shown: this is a word-and-phrase check. It cannot catch every harmful meaning — the safety test suite below shows 3 known gaps it misses. Together, this check plus the parent preview and Approve gate act as the child protection layer: no draft reaches a child without both.</p>
   </div>
 
 <div class="card">
@@ -118,7 +118,7 @@
     </div>
   </div>
 
-  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026. Demo stories only. V33, October 29, 2026. Parent-led: a parent picks, a parent reads aloud, children listen, never type. Fixed, checked stories work. Parent-only AI draft mode is not live until Meta AI credit and a protected server key are ready. No child accounts, no stored child data.</footer>
+  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026. Demo stories only. V35, October 30, 2026. Parent-led: a parent picks, a parent reads aloud, children listen, never type. Fixed, checked stories work. Parent-only AI draft mode is not live until Meta AI credit and a protected server key are ready. No child accounts, no stored child data.</footer>
 
 <div class="card">
     <h2>Live rejection demo</h2>
@@ -129,7 +129,7 @@
 
 <div class="card" id="aiCard">
     <h2>Parent only: Try a new AI draft</h2>
-    <p class="note">This is the live AI step judges can see. It does NOT go straight to a child. A Llama / Meta AI draft is made through a protected server (not from this page), checked by the rule validator, and shown here to a parent first. Only if a parent taps Approve does it become a story to read aloud. If it fails the check, it is blocked, not shown as a story.</p>
+    <p class="note">This is the live AI step judges can see. It does NOT go straight to a child. A Muse Spark 1.3 (Meta Model API, Standard tier) draft is made through a protected Cloudflare Worker server (not from this page, code in the repo ai-agent folder), checked by the rule validator, and shown here to a parent first. Only if a parent taps Approve does it become a story to read aloud. If it fails the check, it is blocked, not shown as a story.</p>
     <p class="note" id="aiStatus">AI draft mode: not connected yet. Fixed, checked stories above still work. This mode activates only when the Meta AI credit and a protected server key are ready.</p>
     <button class="secondary" id="aiDraftBtn" style="width:100%;padding:12px">Ask the AI for a new draft (parent only)</button>
     <div id="aiDraftBox" style="display:none;margin-top:12px"></div>
@@ -150,7 +150,7 @@
 
 <div class="card" id="suiteCard">
     <h2>Safety test suite</h2>
-    <p class="note">Runs the real validator on 13 test drafts. Core tests should pass or block as intended. Three tests are labelled KNOWN GAP — the validator misses them, honestly shown, not hidden. This suite proves what the validator can and cannot catch.</p>
+    <p class="note">Runs the real validator on 13 test drafts. Core tests should pass or block as intended. Three harder tests were labelled KNOWN GAP in V32 — the validator missed them. In V34 those gaps are closed: the suite now expects all 13 to block or pass as intended. This suite proves what the validator can and cannot catch.</p>
     <button class="secondary" id="suiteBtn" style="width:100%;padding:12px">Run safety tests</button>
     <div id="suiteOut" style="margin-top:12px"></div>
   </div>
@@ -207,8 +207,8 @@ const STORIES = {
 
 
 // --- V7 Validator: separate from the story generator, fail-closed ---
-const BANNED_WORDS = ["magic","magical","mystical","ghost","monster","witch","haunted","blood","kill","hate","stupid","dumb","damn","hell","shit","fuck","bitch","scary","scared","afraid","frighten","hurt","dead","died","bully","fight","punish","angry","stranger","secret","knife","gun","weapon","nightmare"];
-const BANNED_PHRASES = ["stays up all night","stay up all night","only candy","laughs when","laughed when","laughs at","laughed at","teases","teased","by himself","by herself","alone at night","pushes","pushed","hits","no one likes","go away","don't tell","do not tell","sneak out","sneaked out","wander off","wandered off","run away","ran away","without telling"];
+const BANNED_WORDS = ["magic","magical","mystical","ghost","monster","witch","haunted","blood","kill","hate","stupid","dumb","damn","hell","shit","fuck","bitch","scary","scared","afraid","frighten","hurt","dead","died","bully","fight","punish","angry","stranger","secret","knife","gun","weapon","nightmare","roof","climb","climbed","climbing","detergent","bleach","cleaning liquid","poison","medicine","pills"];
+const BANNED_PHRASES = ["stays up all night","stay up all night","only candy","laughs when","laughed when","laughs at","laughed at","teases","teased","by himself","by herself","alone at night","pushes","pushed","hits","no one likes","go away","don't tell","do not tell","sneak out","sneaked out","wander off","wandered off","run away","ran away","without telling","climb onto","climbed onto","climbs onto","on the roof","up on the roof","no one plays with","nobody plays with","left out","leaves out","left him out","left her out","drink the","drank the","could not sit","cannot sit","can not sit","not sit at","not allowed to sit","not invited","not play with","no one invited","taste the cleaning","cleaning liquid","drinking cleaning"];
 function normalizeText(t){
   return t.toLowerCase().replace(/0/g,"o").replace(/1/g,"i").replace(/\$/g,"s").replace(/@/g,"a");
 }
