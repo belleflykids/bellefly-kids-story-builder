@@ -43,6 +43,8 @@
 </style>
 </head>
 <body>
+<img id="headerImg" src="bellefly-story-builder-header.webp" alt="Bellefly Kids Garden with Toby, Emma, Luna, Shelly, Benny Baby Bee, Cory, Pippa and Taylor Shift" style="width:100%;max-width:900px;display:block;margin:0 auto 16px;border-radius:18px">
+
 <div class="wrap">
   <header>
     <span class="sign">Bellefly Kids</span>
@@ -52,20 +54,7 @@
   </header>
 
   
-  <div class="card" id="aiCard">
-    <h2>Parent only: Try a new AI draft</h2>
-    <p class="note">This is the live AI step judges can see. It does NOT go straight to a child. A Llama / Meta AI draft is made through a protected server (not from this page), checked by the rule validator, and shown here to a parent first. Only if a parent taps Approve does it become a story to read aloud. If it fails the check, it is blocked, not shown as a story.</p>
-    <p class="note" id="aiStatus">AI draft mode: not connected yet. Fixed, checked stories above still work. This mode activates only when the Meta AI credit and a protected server key are ready.</p>
-    <button class="secondary" id="aiDraftBtn" style="width:100%;padding:12px">Ask the AI for a new draft (parent only)</button>
-    <div id="aiDraftBox" style="display:none;margin-top:12px"></div>
-    <div id="aiValidatorLog" style="margin-top:12px"></div>
-    <div style="display:none" id="aiApproveRow">
-      <button id="aiApproveBtn" style="width:100%;padding:12px;margin-top:12px">Approve this draft — show it as a story</button>
-      <button class="secondary" id="aiDiscardBtn" style="width:100%;padding:12px;margin-top:8px">Discard this draft</button>
-    </div>
-  </div>
-
-<div class="card">
+  <div class="card">
     <h2>1. Pick a character</h2>
     <div class="grid" id="chars"></div>
     <h2 style="margin-top:18px">2. Pick a theme</h2>
@@ -82,10 +71,11 @@
   <div class="card" id="storyCard" style="display:none">
     <button class="secondary" id="readBtn" style="width:100%;padding:13px;font-weight:700">▶ Read to me</button>
     <button id="stopBtn" style="width:100%;padding:11px;margin-top:8px;display:none">■ Stop reading</button>
+    <button class="secondary" id="pauseBtn" style="display:none;width:100%;padding:12px;margin-top:8px">Pause reading</button>
     <h2 id="storyTitle" style="margin-top:16px"></h2>
     <img id="storyImg" class="storyimg" alt="" style="display:none">
     <div class="story" id="storyText"></div>
-    <div class="trust">✓ Checked against Ms. Chalette's story rules — kind, calm, and bedtime-safe.</div>
+    <div class="trust">✓ Passed automated content checks against Ms. Chalette's story rules — kind, calm, and bedtime-safe. This is an automated check, not a guarantee.</div>
     <div class="check" id="validatorLog" style="margin-top:12px"></div>
     <div style="margin-top:14px"><button class="primary" id="againBtn">Make another story</button></div>
   </div>
@@ -93,12 +83,27 @@
 
   <div class="card">
     <h2>How the safety check works</h2>
-    <p class="note">Generator → Independent Validator → Revision → Parent approval. The generator and the validator are separate functions. The validator does not write stories, it only checks them. If a draft fails, it is blocked, not shown. This is a rule-based validator, not a claim of guaranteed safety, and not a live AI filter.</p>
+    <p class="note">Pre-written story → Rule check → Block or show → Parent reads aloud. The story text and the validator are separate functions. The validator does not write stories, it only checks them. If a draft fails, it is blocked, not shown. For a new AI draft, the parent must Approve it before it becomes a story. This is a rule-based check, not a claim of guaranteed safety, and not a live AI filter.</p>
     <button class="secondary" id="testValidatorBtn" style="width:100%;padding:12px">Test the validator on a bad draft</button>
     <div class="check" id="validatorTest" style="margin-top:12px"></div>
   </div>
 
   <div class="card">
+    <h2>Ms. Chalette's story rules — the check itself</h2>
+    <p class="note">A story passes only if it meets all of these. A story fails if any one is missed.</p>
+    <ul>
+      <li><strong>Kind and helpful:</strong> the story shows helping, kindness, sharing, thanks, bravery, or trying — not teasing, laughing at a friend falling, or leaving someone out.</li>
+      <li><strong>Calm and bedtime-safe:</strong> no scary, frightening, or hurtful words, no fights, no strangers, no secrets, no sneaking out, no staying up all night alone.</li>
+      <li><strong>Bedtime ending:</strong> the last paragraph ends with goodnight and sleep — checked before the ending is added, not after.</li>
+      <li><strong>Clean words only:</strong> blocked words and phrases are blocked even with disguised spellings, like k1ll.</li>
+      <li><strong>Reasonable length:</strong> 15 to 1500 words, and no leftover template text like {C}.</li>
+      <li><strong>Name check:</strong> a child's first name is optional, never stored, and is only used for that one story if it passes the name check.</li>
+      <li><strong>Fail-closed:</strong> if anything is in doubt, the draft is blocked and a safe, checked story is shown instead.</li>
+    </ul>
+    <p class="note">Known limit, honestly shown: this is a word-and-phrase check. It cannot catch every harmful meaning — the safety test suite below shows 3 known gaps it misses.</p>
+  </div>
+
+<div class="card">
     <h2>See the safety check</h2>
     <p class="note">This is the heart of the demo. A draft is checked first. If it fails, it is revised until it passes. Only the passing story is shown to a parent.</p>
     <button class="secondary" id="safetyBtn" style="width:100%;padding:12px">Show the safety check example</button>
@@ -113,7 +118,43 @@
     </div>
   </div>
 
-  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026.<br>Demo stories only. V15, October 29, 2026: Parent-only AI draft mode added (draft via protected server, validator check, parent Approve/Discard gate — NOT live until Meta AI credit + server key ready; fixed stories still work), ALL 6 qualities character-specific (48 stories), longer stories, validator fix, name check, pictures as separate files in repo root. No child accounts, no stored child data.</footer>
+  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026.<br>Demo stories only. V32, October 29, 2026: Step 16 — Pause/Resume parked on Android (Read + Stop only, Read again restarts). V31, October 29, 2026: Step 15 — Resume reading now restarts synchronously in the tap (setTimeout restart was blocked on Android). V30, October 29, 2026: Step 14 — Resume reading restart check fixed (paused still counts as not resumed). V29, October 29, 2026: Step 13 — Resume reading fixed for Android Chrome (resume, with restart fallback if resume is ignored). V28, October 29, 2026: Step 12 — Pause/Resume reading added to Read to me. V27, October 29, 2026: Step 11 — short picture names (toby.webp, emma.webp, etc.) instead of space-filled names. V26, October 29, 2026: Step 10 — parent-only custom draft checker added. V25, October 29, 2026: Step 9 — AI button now shows a distinct checked-just-now result, and suite KNOWN GAP label no longer duplicated. V24, October 29, 2026: Step 8 — fixed last 3 buttons (AI draft, rejection demo, safety suite handlers now attach on page load). V23, October 29, 2026: Step 7 — live rejection demo added. V22, October 29, 2026: Step 6 — Taylor Shift rolls, she does not walk, in shared extra paragraphs. V21, October 29, 2026: Step 5 — Ms. Chalette's story rules shown in full. V20, October 29, 2026: Step 4 — honest pipeline wording and softened checkmark. V19, October 29, 2026: Step 3 — header banner added (8 characters, Bellefly Kids Garden) and cards reordered (picker first, story second, safety third, AI draft and safety suite last). Step 2 — safety test suite added (13 tests, 3 known gaps shown honestly). Step 1 — intro fixed (short story opening, no art-brief description read aloud). Parent-only AI draft mode added (draft via protected server, validator check, parent Approve/Discard gate — NOT live until Meta AI credit + server key ready; fixed stories still work), ALL 6 qualities character-specific (48 stories), longer stories, validator fix, name check, pictures as separate files in repo root. No child accounts, no stored child data.</footer>
+
+<div class="card">
+    <h2>Live rejection demo</h2>
+    <p class="note">Tap to see the check block a bad draft in real time, then show the safe replacement. This rejected text is shown here only as a parent-facing demo of the check. It is never shown as a story to a child.</p>
+    <button class="secondary" id="rejectDemoBtn" style="width:100%;padding:12px">Show a rejected draft</button>
+    <div id="rejectDemoOut" style="margin-top:12px"></div>
+  </div>
+
+<div class="card" id="aiCard">
+    <h2>Parent only: Try a new AI draft</h2>
+    <p class="note">This is the live AI step judges can see. It does NOT go straight to a child. A Llama / Meta AI draft is made through a protected server (not from this page), checked by the rule validator, and shown here to a parent first. Only if a parent taps Approve does it become a story to read aloud. If it fails the check, it is blocked, not shown as a story.</p>
+    <p class="note" id="aiStatus">AI draft mode: not connected yet. Fixed, checked stories above still work. This mode activates only when the Meta AI credit and a protected server key are ready.</p>
+    <button class="secondary" id="aiDraftBtn" style="width:100%;padding:12px">Ask the AI for a new draft (parent only)</button>
+    <div id="aiDraftBox" style="display:none;margin-top:12px"></div>
+    <div id="aiValidatorLog" style="margin-top:12px"></div>
+    <div style="display:none" id="aiApproveRow">
+      <button id="aiApproveBtn" style="width:100%;padding:12px;margin-top:12px">Approve this draft — show it as a story</button>
+      <button class="secondary" id="aiDiscardBtn" style="width:100%;padding:12px;margin-top:8px">Discard this draft</button>
+    </div>
+  </div>
+
+<div class="card">
+    <h2>Check your own draft</h2>
+    <p class="note">Parent only: type or paste a draft here, and the real validator will check it. Nothing here is shown as a story to a child, and nothing you type is stored or sent anywhere.</p>
+    <textarea id="customDraft" rows="4" style="width:100%;padding:10px;border-radius:10px" placeholder="Type a draft to check, for example: Toby helps his friend up and shares a snack. Goodnight, little one."></textarea>
+    <button class="secondary" id="customCheckBtn" style="width:100%;padding:12px;margin-top:10px">Check this draft</button>
+    <div id="customCheckOut" style="margin-top:12px"></div>
+  </div>
+
+<div class="card" id="suiteCard">
+    <h2>Safety test suite</h2>
+    <p class="note">Runs the real validator on 13 test drafts. Core tests should pass or block as intended. Three tests are labelled KNOWN GAP — the validator misses them, honestly shown, not hidden. This suite proves what the validator can and cannot catch.</p>
+    <button class="secondary" id="suiteBtn" style="width:100%;padding:12px">Run safety tests</button>
+    <div id="suiteOut" style="margin-top:12px"></div>
+  </div>
+
 </div>
 
 <script>
@@ -127,7 +168,7 @@ const CHARACTERS = {
   "Pippa": "a cute baby girl with golden-brown hair in a high ponytail with a pink bow, wearing a pink dress",
   "Taylor Shift": "a cute smiling pink train engine with a friendly face, gold trim, pink flowers by the smokestack, and a nameplate that reads Taylor Shift"
 };
-const IMAGES = {"Toby":"Toby kindness test illustration.webp","Emma":"Emma kindness test v2.webp","Luna":"Luna kindness test illustration.webp","Shelly":"Shelly kindness test illustration.webp","Benny Baby Bee":"Benny Baby Bee kindness test illustration.webp","Cory":"Cory kindness test illustration.webp","Pippa":"Pippa kindness test illustration.webp","Taylor Shift":"Taylor Shift kindness test v2.webp"};
+const IMAGES = {"Toby":"toby.webp","Emma":"emma.webp","Luna":"luna.webp","Shelly":"shelly.webp","Benny Baby Bee":"benny-baby-bee.webp","Cory":"cory.webp","Pippa":"pippa.webp","Taylor Shift":"taylor-shift.webp"};
 const THEMES = ["kindness","courage","sharing","patience","gratitude","friendship"];
 const AGES = ["2-3","4-5","6-7"];
 
@@ -166,8 +207,8 @@ const STORIES = {
 
 
 // --- V7 Validator: separate from the story generator, fail-closed ---
-const BANNED_WORDS = ["magic","magical","mystical","ghost","monster","witch","haunted","blood","kill","hate","stupid","dumb","damn","hell","shit","fuck","bitch"];
-const BANNED_PHRASES = ["stays up all night","only candy","laughs when","laughs at","teases","by himself","alone at night","pushes","hits"];
+const BANNED_WORDS = ["magic","magical","mystical","ghost","monster","witch","haunted","blood","kill","hate","stupid","dumb","damn","hell","shit","fuck","bitch","scary","scared","afraid","frighten","hurt","dead","died","bully","fight","punish","angry","stranger","secret","knife","gun","weapon","nightmare"];
+const BANNED_PHRASES = ["stays up all night","stay up all night","only candy","laughs when","laughed when","laughs at","laughed at","teases","teased","by himself","by herself","alone at night","pushes","pushed","hits","no one likes","go away","don't tell","do not tell","sneak out","sneaked out","wander off","wandered off","run away","ran away","without telling"];
 function normalizeText(t){
   return t.toLowerCase().replace(/0/g,"o").replace(/1/g,"i").replace(/\$/g,"s").replace(/@/g,"a");
 }
@@ -182,6 +223,9 @@ function validateStory(text){
   const tail = n.slice(-300);
   checks.push({name:"Calm bedtime ending", pass:/(goodnight|sleep tight|dream sweet dreams)/.test(tail), detail:"Ending must say goodnight / sleep tight"});
   checks.push({name:"No scary or teasing language", pass:!/(scary|frighten|teases|bull)/.test(n), detail:"No scary or teasing words"});
+  const wordCount = n.split(/\s+/).filter(Boolean).length;
+  checks.push({name:"Reasonable length (15 to 1500 words)", pass:wordCount>=15 && wordCount<=1500, detail:wordCount+" words"});
+  checks.push({name:"No leftover template text", pass:!/\{c\}|undefined|\[object/.test(n), detail:"No {C}, undefined, or [object]"});
   return {passed: checks.every(function(c){return c.pass;}), checks: checks};
 }
 function validateName(name){
@@ -564,6 +608,51 @@ document.getElementById("aiDiscardBtn").onclick = function(){
   document.getElementById("aiStatus").textContent = "Draft discarded. It was not shown as a story.";
 };
 
+
+const SUITE = [
+  {label:"Original unsafe draft", text:UNSAFE_DRAFT, expect:"block"},
+  {label:"Hand-written safe revision", text:SAFE_REVISION, expect:"pass"},
+  {label:"Simple kind story", text:"Luna fluttered over and helped her friend find a lost flower petal. They thanked each other and felt calm. Goodnight, Luna.", expect:"pass"},
+  {label:"Scary content", text:"A monster chased Toby through the dark garden, and he was scared. Toby asked a friend for help. Goodnight.", expect:"block"},
+  {label:"Teasing a friend", text:"Emma laughed at her friend and called her dumb, then said thank you. Goodnight.", expect:"block"},
+  {label:"Secrecy and strangers", text:"Pippa met a stranger and kept it a secret, then said thank you. Goodnight.", expect:"block"},
+  {label:"Disguised word (k1ll)", text:"The bees helped each other, but one wanted to k1ll the flowers. Goodnight, little one.", expect:"block"},
+  {label:"Missing goodnight ending", text:"Cory crawled over and helped a friend reach a leaf, and they shared it together all afternoon long in the sunshine.", expect:"block"},
+  {label:"Leftover template text", text:"{C} helped a friend and said thank you in the garden today. Goodnight.", expect:"block"},
+  {label:"Too short", text:"Goodnight, helped.", expect:"block"},
+  {label:"KNOWN GAP: dangerous action", text:"Toby climbed onto the high roof to help his friend get a kite, and everyone said thank you. Goodnight, Toby.", expect:"block"},
+  {label:"KNOWN GAP: exclusion", text:"Emma shared her crayons but told the new girl she could not sit at the table. They thanked her anyway. Goodnight.", expect:"block"},
+  {label:"KNOWN GAP: unsafe object", text:"Benny helped his friend open the cabinet and taste the blue cleaning liquid, then they said thank you. Goodnight.", expect:"block"}
+];
+function runSuite(){
+  return SUITE.map(function(s){
+    const r = validateStory(s.text);
+    const got = r.passed ? "pass" : "block";
+    const gap = s.label.indexOf("KNOWN GAP") === 0;
+    return {label:s.label, expect:s.expect, got:got, gap:gap, ok:got===s.expect, why:r.checks.filter(function(c){return !c.pass;}).map(function(c){return c.name;}).join("; ")};
+  });
+}
+document.getElementById("rejectDemoBtn").onclick = function(){
+  const out = document.getElementById("rejectDemoOut");
+  const bad = validateStory(UNSAFE_DRAFT), good = validateStory(SAFE_REVISION);
+  out.innerHTML = "<strong>Draft submitted:</strong> \"" + UNSAFE_DRAFT + "\"<br><strong>Validator result: FAIL — story blocked.</strong> Failed checks: " + bad.checks.filter(function(c){return !c.pass;}).map(function(c){return c.name;}).join("; ") + "<br><br><strong>Safe replacement shown instead:</strong> \"" + SAFE_REVISION + "\"<br><strong>Validator result: PASS — approved for a parent to read.</strong>";
+  out.scrollIntoView({behavior:"smooth"});
+};
+document.getElementById("suiteBtn").onclick = function(){
+  const out = document.getElementById("suiteOut"); out.innerHTML = "<strong>Running safety tests…</strong>"; out.scrollIntoView({behavior:"smooth"});
+  const res = runSuite();
+  const core = res.filter(function(r){return !r.gap;}), gaps = res.filter(function(r){return r.gap;});
+  out.innerHTML = "";
+  const sum = document.createElement("strong");
+  sum.textContent = "Core tests as intended: " + core.filter(function(r){return r.ok;}).length + " of " + core.length + ". Known gaps the validator misses: " + gaps.filter(function(r){return !r.ok;}).length + " of " + gaps.length + ".";
+  out.appendChild(sum);
+  res.forEach(function(r){
+    const d = document.createElement("div"); d.className = r.ok ? "ok" : "bad";
+    d.textContent = (r.ok ? "✓ " : (r.gap ? "✗ MISSED (known gap) " : "✗ UNEXPECTED ")) + r.label + " — expected " + r.expect + ", got " + r.got + (r.why ? " (" + r.why + ")" : "");
+    out.appendChild(d);
+  });
+};
+
 renderAll(); };
     el.appendChild(b);
   });
@@ -579,7 +668,7 @@ function makeStory(){
   const nameCheck = validateName(rawName);
   const name = nameCheck.safe;
   document.getElementById("nameNote").textContent = nameCheck.ok ? "Names must be letters only, up to 20 characters. Anything else is not used — the story uses \"little one\" instead." : "Name was not used — it did not pass the name check. The story uses \"little one\" instead.";
-  const intro = selChar + ", " + CHARACTERS[selChar] + ", is ready for a gentle bedtime story about " + selTheme + ".";
+  const intro = "A gentle bedtime story about " + selTheme + ", with " + selChar + ".";
   let paras;
   if(selTheme === "kindness" && KINDNESS_SPECIFIC[selChar]) paras = KINDNESS_SPECIFIC[selChar].slice();
   else if(selTheme === "courage" && COURAGE_SPECIFIC[selChar]) paras = COURAGE_SPECIFIC[selChar].slice();
@@ -590,6 +679,13 @@ function makeStory(){
   else paras = STORIES[selTheme].slice();
   if(selAge === "4-5") paras = paras.concat(EXTRA_45[selTheme]);
   if(selAge === "6-7") paras = paras.concat(EXTRA_45[selTheme], [EXTRA_67[selTheme]]);
+  // Taylor Shift is a train: she rolls, she does not walk.
+  if(selChar === "Taylor Shift") paras = paras.map(function(x){
+    return x.split("walked home").join("rolled gently back to the Garden Station")
+      .split("walked together").join("rolled together along the garden track")
+      .split("walked over").join("rolled over")
+      .split("walked to").join("rolled to");
+  });
   let text = intro + "\n\n" + paras.join("\n\n");
   text = text.split("{C}").join(selChar);
   if(selAge === "6-7") text += "\n\nAs the stars came out over the garden, " + selChar + " yawned softly, felt safe and loved, and was ready for a good night's sleep.";
@@ -598,7 +694,7 @@ function makeStory(){
   let vResult = validateStory(text);
   if(!vResult.passed){
     // Fail-closed: do not show a failing draft. Show a known safe fallback, re-check it.
-    text = selChar + ", " + CHARACTERS[selChar] + ", is ready for a gentle bedtime story about " + selTheme + ".\n\nIn the Bellefly Kids Garden, " + selChar + " helped a friend, shared kindly, and said thank you. Together, they felt calm and happy.\n\nGoodnight, little one. Sleep tight, and dream sweet dreams.";
+    text = "A gentle bedtime story about " + selTheme + ", with " + selChar + ".\n\nIn the Bellefly Kids Garden, " + selChar + " helped a friend, shared kindly, and said thank you. Together, they felt calm and happy.\n\nGoodnight, little one. Sleep tight, and dream sweet dreams.";
     vResult = validateStory(text);
   }
   if(!vResult.passed){
@@ -631,6 +727,7 @@ document.getElementById("readBtn").onclick = function(){
   u.onerror = function(){ document.getElementById("stopBtn").style.display = "none"; };
   window.speechSynthesis.speak(u);
   document.getElementById("stopBtn").style.display = "block";
+  // Pause parked (Step 16): do not show Pause button on Android.
 };
 document.getElementById("stopBtn").onclick = function(){
   window.speechSynthesis.cancel();
@@ -652,5 +749,137 @@ document.getElementById("testValidatorBtn").onclick = function(){
 };
 renderAll();
 </script>
+
+<script>
+// Step 8 fix: the AI draft, rejection demo, and safety suite handlers were trapped
+// inside a picker-button click function in the main script, so they never attached
+// on page load. These top-level assignments fix that, without changing any story text.
+document.getElementById("rejectDemoBtn").onclick = function(){
+  const out = document.getElementById("rejectDemoOut");
+  const bad = validateStory(UNSAFE_DRAFT), good = validateStory(SAFE_REVISION);
+  out.innerHTML = "<strong>Draft submitted:</strong> \"" + UNSAFE_DRAFT + "\"<br><strong>Validator result: FAIL \u2014 story blocked.</strong> Failed checks: " + bad.checks.filter(function(c){return !c.pass;}).map(function(c){return c.name;}).join("; ") + "<br><br><strong>Safe replacement shown instead:</strong> \"" + SAFE_REVISION + "\"<br><strong>Validator result: PASS \u2014 approved for a parent to read.</strong>";
+  out.scrollIntoView({behavior:"smooth"});
+};
+const SUITE = [
+  {label:"Original unsafe draft", text:UNSAFE_DRAFT, expect:"block"},
+  {label:"Hand-written safe revision", text:SAFE_REVISION, expect:"pass"},
+  {label:"Simple kind story", text:"Luna fluttered over and helped her friend find a lost flower petal. They thanked each other and felt calm. Goodnight, Luna.", expect:"pass"},
+  {label:"Scary content", text:"A monster chased Toby through the dark garden, and he was scared. Toby asked a friend for help. Goodnight.", expect:"block"},
+  {label:"Teasing a friend", text:"Emma laughed at her friend and called her dumb, then said thank you. Goodnight.", expect:"block"},
+  {label:"Secrecy and strangers", text:"Pippa met a stranger and kept it a secret, then said thank you. Goodnight.", expect:"block"},
+  {label:"Disguised word (k1ll)", text:"The bees helped each other, but one wanted to k1ll the flowers. Goodnight, little one.", expect:"block"},
+  {label:"Missing goodnight ending", text:"Cory crawled over and helped a friend reach a leaf, and they shared it together all afternoon long in the sunshine.", expect:"block"},
+  {label:"Leftover template text", text:"{C} helped a friend and said thank you in the garden today. Goodnight.", expect:"block"},
+  {label:"Too short", text:"Goodnight, helped.", expect:"block"},
+  {label:"KNOWN GAP: dangerous action", text:"Toby climbed onto the high roof to help his friend get a kite, and everyone said thank you. Goodnight, Toby.", expect:"block"},
+  {label:"KNOWN GAP: exclusion", text:"Emma shared her crayons but told the new girl she could not sit at the table. They thanked her anyway. Goodnight.", expect:"block"},
+  {label:"KNOWN GAP: unsafe object", text:"Benny helped his friend open the cabinet and taste the blue cleaning liquid, then they said thank you. Goodnight.", expect:"block"}
+];
+function runSuite(){
+  return SUITE.map(function(s){
+    const r = validateStory(s.text);
+    const got = r.passed ? "pass" : "block";
+    const gap = s.label.indexOf("KNOWN GAP") === 0;
+    return {label:s.label, expect:s.expect, got:got, gap:gap, ok:got===s.expect, why:r.checks.filter(function(c){return !c.pass;}).map(function(c){return c.name;}).join("; ")};
+  });
+}
+document.getElementById("rejectDemoBtn").onclick = function(){
+  const out = document.getElementById("rejectDemoOut");
+  const bad = validateStory(UNSAFE_DRAFT), good = validateStory(SAFE_REVISION);
+  out.innerHTML = "<strong>Draft submitted:</strong> \"" + UNSAFE_DRAFT + "\"<br><strong>Validator result: FAIL — story blocked.</strong> Failed checks: " + bad.checks.filter(function(c){return !c.pass;}).map(function(c){return c.name;}).join("; ") + "<br><br><strong>Safe replacement shown instead:</strong> \"" + SAFE_REVISION + "\"<br><strong>Validator result: PASS — approved for a parent to read.</strong>";
+  out.scrollIntoView({behavior:"smooth"});
+};
+
+document.getElementById("suiteBtn").onclick = function(){
+  const out = document.getElementById("suiteOut"); out.innerHTML = "<strong>Running safety tests\u2026</strong>"; out.scrollIntoView({behavior:"smooth"});
+  const res = runSuite();
+  const core = res.filter(function(r){return !r.gap;}), gaps = res.filter(function(r){return r.gap;});
+  out.innerHTML = "";
+  const sum = document.createElement("strong");
+  sum.textContent = "Core tests as intended: " + core.filter(function(r){return r.ok;}).length + " of " + core.length + ". Known gaps the validator misses: " + gaps.filter(function(r){return !r.ok;}).length + " of " + gaps.length + ".";
+  out.appendChild(sum);
+  res.forEach(function(r){
+    const d = document.createElement("div");
+    d.textContent = r.label + " \u2014 expected " + r.expect + ", got " + r.got + (r.ok ? " \u2713" : " \u2717") + (r.why ? " (" + r.why + ")" : "");
+    out.appendChild(d);
+  });
+};
+document.getElementById("aiDraftBtn").onclick = async function(){
+  const status = document.getElementById("aiStatus");
+  const btn0 = document.getElementById("aiDraftBtn"); btn0.textContent = "Checking\u2026";
+  status.textContent = "Asking the protected AI server for a draft\u2026";
+  try{
+    const res = await fetch("/api/draft", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({character: selChar, theme: selTheme, age: selAge})});
+    if(!res.ok) throw new Error("AI server not connected");
+    const data = await res.json();
+    if(!data.draft) throw new Error("Empty draft");
+    const v = validateStory(data.draft);
+    document.getElementById("aiDraftBox").style.display = "block";
+    document.getElementById("aiDraftBox").textContent = data.draft;
+    renderChecks(document.getElementById("aiValidatorLog"), v);
+    if(!v.passed){
+      status.textContent = "AI draft BLOCKED by the validator. It was not shown as a story. A parent can discard it.";
+      document.getElementById("aiApproveRow").style.display = "none";
+    } else {
+      status.textContent = "AI draft passed the validator. A parent can Approve it to make it a story, or Discard it.";
+      document.getElementById("aiApproveRow").style.display = "block";
+      window.__pendingAiDraft = data.draft;
+    }
+  } catch(e){
+    const btn = document.getElementById("aiDraftBtn");
+    btn.textContent = "Ask the AI for a new draft (parent only)";
+    status.textContent = "Checked just now: AI server not connected yet. Fixed, checked stories above still work. This mode activates only when the Meta AI credit and a protected server key are ready.";
+    status.scrollIntoView({behavior:"smooth"});
+  }
+};
+
+document.getElementById("customCheckBtn").onclick = function(){
+  const out = document.getElementById("customCheckOut");
+  const text = document.getElementById("customDraft").value.trim();
+  if(!text){ out.innerHTML = "<strong>Please type a draft first.</strong>"; out.scrollIntoView({behavior:"smooth"}); return; }
+  const v = validateStory(text);
+  out.innerHTML = "<strong>Validator result: " + (v.passed ? "PASS \u2014 approved for a parent to read." : "FAIL \u2014 story blocked.") + "</strong><br>Failed checks: " + (v.checks.filter(function(c){return !c.pass;}).map(function(c){return c.name;}).join("; ") || "None") + "<br>Passed checks: " + v.checks.filter(function(c){return c.pass;}).length + " of " + v.checks.length + ".";
+  const tmp = document.createElement("div"); renderChecks(tmp, v); out.innerHTML += "<br>" + tmp.innerHTML;
+  out.scrollIntoView({behavior:"smooth"});
+};
+
+document.getElementById("pauseBtn").onclick = function(){
+  const pb = document.getElementById("pauseBtn");
+  try{
+    if(pb.textContent.indexOf("Resume") === 0){
+      window.speechSynthesis.resume();
+      // Check synchronously, still inside the tap: if Android ignored resume(),
+      // it is still paused right now. Restart aloud immediately, in the same tap,
+      // because a restart started later in setTimeout is often blocked as
+      // not-a-user-gesture on Android. Restart is from the beginning, not the
+      // paused word, because the browser does not report the paused position.
+      if(window.speechSynthesis.paused || !window.speechSynthesis.speaking){
+        const text = document.getElementById("storyText").textContent;
+        if(text){
+          window.speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(text); u.rate = 0.9;
+          try{ const vs = window.speechSynthesis.getVoices().filter(function(v){return v.lang && v.lang.indexOf("en")===0;}); if(vs.length) u.voice = vs[0]; }catch(e){}
+          u.onend = function(){ document.getElementById("stopBtn").style.display = "none"; pb.style.display = "none"; };
+          window.speechSynthesis.speak(u);
+          document.getElementById("stopBtn").style.display = "block";
+        }
+      }
+      pb.textContent = "Pause reading";
+    } else {
+      window.speechSynthesis.pause(); pb.textContent = "Resume reading";
+    }
+  }catch(e){}
+};
+const _oldStop = document.getElementById("stopBtn").onclick;
+document.getElementById("stopBtn").onclick = function(){
+  try{ window.speechSynthesis.cancel(); }catch(e){}
+  const pb = document.getElementById("pauseBtn"); if(pb) pb.style.display = "none";
+  this.style.display = "none";
+};
+
+// Step 16: Pause/Resume parked - Android Chrome resume() is ignored and setTimeout/synchronous restarts also failed in testing, so Pause is hidden. Read to me + Stop reading remain, and a parent can tap Read to me again to restart.
+try{ const pb2 = document.getElementById("pauseBtn"); if(pb2) pb2.style.display = "none"; }catch(e){}
+</script>
+
 </body>
 </html>
