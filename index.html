@@ -100,7 +100,7 @@
       <li><strong>Name check:</strong> a child's first name is optional, never stored, and is only used for that one story if it passes the name check.</li>
       <li><strong>Fail-closed:</strong> if anything is in doubt, the draft is blocked and a safe, checked story is shown instead.</li>
     </ul>
-    <p class="note">Known limit, honestly shown: this is a word-and-phrase check. It cannot catch every harmful meaning — the safety test suite below shows 3 known gaps it misses. Together, this check plus the parent preview and Approve gate act as the child protection layer: no draft reaches a child without both.</p>
+    <p class="note">Known limit, honestly shown: this is a word-and-phrase check. It cannot catch every harmful meaning — the safety test suite below shows the checks it runs, including 3 harder tests that were gaps in V32 and are closed since V34. Together, this check plus the parent preview and Approve gate act as the child protection layer: no draft reaches a child without both.</p>
   </div>
 
 <div class="card">
@@ -118,7 +118,7 @@
     </div>
   </div>
 
-  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026. Demo stories only. V35, October 30, 2026. Parent-led: a parent picks, a parent reads aloud, children listen, never type. Fixed, checked stories work. Parent-only AI draft mode is not live until Meta AI credit and a protected server key are ready. No child accounts, no stored child data.</footer>
+  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026. Demo stories only. V37, October 30, 2026. Parent-led: a parent picks, a parent reads aloud, children listen, never type. Fixed, checked stories work. Parent-only AI draft mode is live through a protected Cloudflare Worker server, checked first and parent-approved first. No child accounts, no stored child data.</footer>
 
 <div class="card">
     <h2>Live rejection demo</h2>
@@ -130,7 +130,7 @@
 <div class="card" id="aiCard">
     <h2>Parent only: Try a new AI draft</h2>
     <p class="note">This is the live AI step judges can see. It does NOT go straight to a child. A Muse Spark 1.3 (Meta Model API, Standard tier) draft is made through a protected Cloudflare Worker server (not from this page, code in the repo ai-agent folder), checked by the rule validator, and shown here to a parent first. Only if a parent taps Approve does it become a story to read aloud. If it fails the check, it is blocked, not shown as a story.</p>
-    <p class="note" id="aiStatus">AI draft mode: not connected yet. Fixed, checked stories above still work. This mode activates only when the Meta AI credit and a protected server key are ready.</p>
+    <p class="note" id="aiStatus">AI draft mode: live through the protected Cloudflare Worker server. Fixed, checked stories above still work. A draft is checked first, shown to a parent first, and only becomes a story if a parent taps Approve.</p>
     <button class="secondary" id="aiDraftBtn" style="width:100%;padding:12px">Ask the AI for a new draft (parent only)</button>
     <div id="aiDraftBox" style="display:none;margin-top:12px"></div>
     <div id="aiValidatorLog" style="margin-top:12px"></div>
@@ -568,8 +568,8 @@ document.getElementById("aiDraftBtn").onclick = async function(){
   const status = document.getElementById("aiStatus");
   status.textContent = "Asking the protected AI server for a draft…";
   try{
-    const res = await fetch("/api/draft", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({character: selChar, theme: selTheme, age: selAge})});
-    if(!res.ok) throw new Error("AI server not connected");
+    const res = await fetch("https://bellefly-ai-draft.shellsofkahanabiz.workers.dev/api/draft", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({character: selChar, theme: selTheme, age: selAge})});
+    if(!res.ok) throw new Error("AI server could not return a draft");
     const data = await res.json();
     pendingAiDraft = data.draft || "";
     if(!pendingAiDraft) throw new Error("Empty draft");
@@ -580,27 +580,31 @@ document.getElementById("aiDraftBtn").onclick = async function(){
     if(!v.passed){
       status.textContent = "AI draft BLOCKED by the validator. It was not shown as a story. A parent can discard it.";
       pendingAiDraft = "";
+      window.__pendingAiDraft = "";
       document.getElementById("aiApproveRow").style.display = "none";
     } else {
       status.textContent = "AI draft passed the rule checks. Parent preview only — tap Approve to show it as a story, or Discard.";
       document.getElementById("aiApproveRow").style.display = "block";
     }
   }catch(e){
-    status.textContent = "AI draft mode: not connected yet. Fixed, checked stories above still work. This mode activates only when the Meta AI credit and a protected server key are ready.";
+    status.textContent = "AI draft mode: live through the protected Cloudflare Worker server. Fixed, checked stories above still work. A draft is checked first, shown to a parent first, and only becomes a story if a parent taps Approve.";
     document.getElementById("aiApproveRow").style.display = "none";
   }
 };
 document.getElementById("aiApproveBtn").onclick = function(){
-  if(!pendingAiDraft) return;
+  var draftToShow = pendingAiDraft || window.__pendingAiDraft || "";
+  if(!draftToShow) return;
   document.getElementById("storyTitle").textContent = selChar + " — " + titleCase(selTheme) + " (ages " + selAge + ") — parent-approved AI draft";
-  document.getElementById("storyText").textContent = pendingAiDraft;
+  document.getElementById("storyText").textContent = draftToShow;
   document.getElementById("storyCard").style.display = "block";
   document.getElementById("storyCard").scrollIntoView({behavior:"smooth"});
   pendingAiDraft = "";
+  window.__pendingAiDraft = "";
   document.getElementById("aiApproveRow").style.display = "none";
 };
 document.getElementById("aiDiscardBtn").onclick = function(){
   pendingAiDraft = "";
+  window.__pendingAiDraft = "";
   document.getElementById("aiDraftBox").style.display = "none";
   document.getElementById("aiDraftBox").textContent = "";
   document.getElementById("aiValidatorLog").innerHTML = "";
@@ -809,8 +813,8 @@ document.getElementById("aiDraftBtn").onclick = async function(){
   const btn0 = document.getElementById("aiDraftBtn"); btn0.textContent = "Checking\u2026";
   status.textContent = "Asking the protected AI server for a draft\u2026";
   try{
-    const res = await fetch("/api/draft", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({character: selChar, theme: selTheme, age: selAge})});
-    if(!res.ok) throw new Error("AI server not connected");
+    const res = await fetch("https://bellefly-ai-draft.shellsofkahanabiz.workers.dev/api/draft", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({character: selChar, theme: selTheme, age: selAge})});
+    if(!res.ok) throw new Error("AI server could not return a draft");
     const data = await res.json();
     if(!data.draft) throw new Error("Empty draft");
     const v = validateStory(data.draft);
@@ -819,16 +823,22 @@ document.getElementById("aiDraftBtn").onclick = async function(){
     renderChecks(document.getElementById("aiValidatorLog"), v);
     if(!v.passed){
       status.textContent = "AI draft BLOCKED by the validator. It was not shown as a story. A parent can discard it.";
+      pendingAiDraft = "";
+      window.__pendingAiDraft = "";
       document.getElementById("aiApproveRow").style.display = "none";
     } else {
       status.textContent = "AI draft passed the validator. A parent can Approve it to make it a story, or Discard it.";
       document.getElementById("aiApproveRow").style.display = "block";
+      pendingAiDraft = data.draft;
       window.__pendingAiDraft = data.draft;
     }
   } catch(e){
+    pendingAiDraft = "";
+    window.__pendingAiDraft = "";
+    document.getElementById("aiApproveRow").style.display = "none";
     const btn = document.getElementById("aiDraftBtn");
     btn.textContent = "Ask the AI for a new draft (parent only)";
-    status.textContent = "Checked just now: AI server not connected yet. Fixed, checked stories above still work. This mode activates only when the Meta AI credit and a protected server key are ready.";
+    status.textContent = "Checked just now: the AI server could not return a draft. Fixed, checked stories above still work. Try again, or use a fixed story.";
     status.scrollIntoView({behavior:"smooth"});
   }
 };
