@@ -118,7 +118,7 @@
     </div>
   </div>
 
-  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026. Demo stories only. V37, October 30, 2026. Parent-led: a parent picks, a parent reads aloud, children listen, never type. Fixed, checked stories work. Parent-only AI draft mode is live through a protected Cloudflare Worker server, checked first and parent-approved first. No child accounts, no stored child data.</footer>
+  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026. Demo stories only. V40, October 30, 2026. Parent-led: a parent picks, a parent reads aloud, children listen, never type. Fixed, checked stories work. Parent-only AI draft mode is live through a protected Cloudflare Worker server, checked first and parent-approved first. No child accounts, no stored child data.</footer>
 
 <div class="card">
     <h2>Live rejection demo</h2>
@@ -809,38 +809,56 @@ document.getElementById("suiteBtn").onclick = function(){
   });
 };
 document.getElementById("aiDraftBtn").onclick = async function(){
+  // V40 fold-in (from V39 reviewer ideas, kept in Chalette's Parent-only wording):
+  // a proper pending-draft state, not a bare global string; a fetch timeout and
+  // busy guard; blocked draft text is NOT shown; Approve rechecks and discards
+  // if the picker choices changed since the draft was made.
+  if (window.__aiBusy) return;
+  window.__aiBusy = true;
+  const btn = document.getElementById("aiDraftBtn");
+  const oldLabel = btn.textContent; btn.disabled = true; btn.textContent = "Generating\u2026";
   const status = document.getElementById("aiStatus");
-  const btn0 = document.getElementById("aiDraftBtn"); btn0.textContent = "Checking\u2026";
   status.textContent = "Asking the protected AI server for a draft\u2026";
+  window.__aiPending = null;
+  document.getElementById("aiApproveRow").style.display = "none";
+  document.getElementById("aiDraftBox").style.display = "none";
+  document.getElementById("aiDraftBox").textContent = "";
+  const selected = {character: selChar, theme: selTheme, age: selAge};
+  const controller = (typeof AbortController !== "undefined") ? new AbortController() : null;
+  const timer = controller ? setTimeout(function(){ try{ controller.abort(); }catch(e){} }, 18000) : null;
   try{
-    const res = await fetch("https://bellefly-ai-draft.shellsofkahanabiz.workers.dev/api/draft", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({character: selChar, theme: selTheme, age: selAge})});
+    const res = await fetch("https://bellefly-ai-draft.shellsofkahanabiz.workers.dev/api/draft", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(selected), signal: controller ? controller.signal : undefined});
     if(!res.ok) throw new Error("AI server could not return a draft");
     const data = await res.json();
-    if(!data.draft) throw new Error("Empty draft");
+    if(!data.draft || typeof data.draft !== "string" || data.draft.length > 12000) throw new Error("Empty draft");
     const v = validateStory(data.draft);
-    document.getElementById("aiDraftBox").style.display = "block";
-    document.getElementById("aiDraftBox").textContent = data.draft;
     renderChecks(document.getElementById("aiValidatorLog"), v);
     if(!v.passed){
-      status.textContent = "AI draft BLOCKED by the validator. It was not shown as a story. A parent can discard it.";
-      pendingAiDraft = "";
-      window.__pendingAiDraft = "";
+      status.textContent = "AI draft BLOCKED by the validator. Its text is not shown as a story. A parent can discard it.";
+      window.__aiPending = null;
       document.getElementById("aiApproveRow").style.display = "none";
     } else {
+      window.__aiPending = {text: data.draft, selection: selected};
+      window.__pendingAiDraft = data.draft;
+      document.getElementById("aiDraftBox").style.display = "block";
+      document.getElementById("aiDraftBox").textContent = data.draft;
       status.textContent = "AI draft passed the validator. A parent can Approve it to make it a story, or Discard it.";
       document.getElementById("aiApproveRow").style.display = "block";
-      pendingAiDraft = data.draft;
-      window.__pendingAiDraft = data.draft;
     }
   } catch(e){
-    pendingAiDraft = "";
+    window.__aiPending = null;
     window.__pendingAiDraft = "";
     document.getElementById("aiApproveRow").style.display = "none";
-    const btn = document.getElementById("aiDraftBtn");
     btn.textContent = "Ask the AI for a new draft (parent only)";
     status.textContent = "Checked just now: the AI server could not return a draft. Fixed, checked stories above still work. Try again, or use a fixed story.";
     status.scrollIntoView({behavior:"smooth"});
+  } finally {
+    if (timer) clearTimeout(timer);
+    window.__aiBusy = false;
+    btn.disabled = false;
+    if (btn.textContent === "Generating\u2026") btn.textContent = oldLabel;
   }
+
 };
 
 document.getElementById("customCheckBtn").onclick = function(){
@@ -889,6 +907,53 @@ document.getElementById("stopBtn").onclick = function(){
 
 // Step 16: Pause/Resume parked - Android Chrome resume() is ignored and setTimeout/synchronous restarts also failed in testing, so Pause is hidden. Read to me + Stop reading remain, and a parent can tap Read to me again to restart.
 try{ const pb2 = document.getElementById("pauseBtn"); if(pb2) pb2.style.display = "none"; }catch(e){}
+
+// V40 fold-in: Approve/Discard, top-level (V38 fix), now state-based (V39 idea).
+// Approve rechecks the saved draft with the real validator and discards it if
+// the picker choices changed since it was made, or if it now fails the check.
+// This keeps Chalette's wording ("Parent only", "parent-approved") and her
+// validator and banned list exactly as in V38; only the Approve/Discard logic
+// is taken from the reviewer rewrite.
+document.getElementById("aiApproveBtn").onclick = function(){
+  var pending = window.__aiPending || null;
+  var draftToShow = pending ? pending.text : (window.__pendingAiDraft || "");
+  if(!draftToShow) return;
+  if(pending && (pending.selection.character !== selChar || pending.selection.theme !== selTheme || pending.selection.age !== selAge)){
+    window.__aiPending = null; window.__pendingAiDraft = "";
+    document.getElementById("aiDraftBox").style.display = "none";
+    document.getElementById("aiDraftBox").textContent = "";
+    document.getElementById("aiValidatorLog").innerHTML = "";
+    document.getElementById("aiApproveRow").style.display = "none";
+    document.getElementById("aiStatus").textContent = "Choices changed. Draft discarded.";
+    return;
+  }
+  var v = validateStory(draftToShow);
+  if(!v.passed){
+    window.__aiPending = null; window.__pendingAiDraft = "";
+    document.getElementById("aiDraftBox").style.display = "none";
+    document.getElementById("aiDraftBox").textContent = "";
+    document.getElementById("aiValidatorLog").innerHTML = "";
+    document.getElementById("aiApproveRow").style.display = "none";
+    document.getElementById("aiStatus").textContent = "Draft blocked on recheck.";
+    return;
+  }
+  document.getElementById("storyTitle").textContent = selChar + " — " + titleCase(selTheme) + " (ages " + selAge + ") — parent-approved AI draft";
+  document.getElementById("storyText").textContent = draftToShow;
+  document.getElementById("storyCard").style.display = "block";
+  document.getElementById("storyCard").scrollIntoView({behavior:"smooth"});
+  window.__aiPending = null; window.__pendingAiDraft = "";
+  document.getElementById("aiApproveRow").style.display = "none";
+  document.getElementById("aiDraftBox").style.display = "none";
+  document.getElementById("aiStatus").textContent = "Draft approved and displayed for a parent to read.";
+};
+document.getElementById("aiDiscardBtn").onclick = function(){
+  window.__aiPending = null; window.__pendingAiDraft = "";
+  document.getElementById("aiDraftBox").style.display = "none";
+  document.getElementById("aiDraftBox").textContent = "";
+  document.getElementById("aiValidatorLog").innerHTML = "";
+  document.getElementById("aiApproveRow").style.display = "none";
+  document.getElementById("aiStatus").textContent = "Draft discarded. It was not shown as a story.";
+};
 </script>
 
 </body>
