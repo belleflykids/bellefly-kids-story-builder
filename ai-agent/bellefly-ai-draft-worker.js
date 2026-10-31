@@ -1,5 +1,4 @@
 // Bellefly Kids Story Builder — AI draft proxy (Cloudflare Worker, COMPLETE, Step 1 + V34 abuse protection)
-// Bellefly Kids Story Builder — AI draft proxy (Cloudflare Worker, COMPLETE, Step 1 + V34 abuse protection)
 // ============================================================================
 // DEPLOYMENT — DO NOT RUN LIVE UNTIL THE $150 CREDIT LANDS:
 //   1) wrangler secret put META_API_KEY   (never paste a key into the repo, chat, or this file)
@@ -28,13 +27,30 @@ const CHARACTERS = ["Toby", "Emma", "Luna", "Shelly", "Benny Baby Bee", "Cory", 
 const THEMES = ["kindness", "courage", "sharing", "patience", "gratitude", "friendship"];
 const AGES = ["2-3", "4-5", "6-7"];
 
-// System prompt — fixed, not user-typed. The parent only picks buttons;
-// no free text from a child ever reaches the model.
+// Locked character looks — added 30 Oct after the first live draft called
+// Toby "a little bunny". The model must never change who a character is.
+// These descriptions are fixed, not user-typed, and match the Bellefly Kids
+// locked looks. The parent only picks buttons; no free text from a child
+// ever reaches the model.
+const CHARACTER_LOOKS = {
+  "Toby": "Toby is a little boy with short blonde hair, a light blue shirt, mustard-yellow overalls with a blue flower emblem on the pocket, a blue bow tie, barefoot. He is a boy, never an animal.",
+  "Emma": "Emma is a little girl with brown hair and bangs, a pink butterfly hair pin (never a flower), a pink butterfly-print top, a pink sparkly tulle skirt, pink butterfly shoes, frilly pink socks, and a pink-and-purple butterfly backpack.",
+  "Luna": "Luna is a baby butterfly with fluffy cream fur, big purple eyes, rosy cheeks, two curly brown antennae, and large sparkly translucent purple and pink wings with colorful polka dots.",
+  "Shelly": "Shelly is a fluffy baby dragonfly with soft pastel blue and lavender fur, big purple eyes, four sparkly translucent wings, a purple bow on her head, fluffy pom-pom antennae, and a striped pastel tail.",
+  "Benny Baby Bee": "Benny Baby Bee is a fluffy baby bumblebee with soft golden-yellow fur, big sparkly brown eyes, two curly brown antennae tipped with fluffy yellow pom-poms, four iridescent sparkly wings, a fuzzy black-and-yellow striped body, and a purple bow tie with a gold heart charm stamped with the letter B.",
+  "Cory": "Cory is a little caterpillar with soft fuzzy light-green fur, big green eyes, rosy cheeks, two fuzzy green antennae, a segmented fluffy body with little round green feet, and a green polka-dot bow tie.",
+  "Pippa": "Pippa is a baby girl with light golden-brown hair in a high bouncy ponytail tied with a pink bow, big warm brown eyes and rosy cheeks, wearing a pink dress with ruffled sleeves, a big pink satin bow at the waist, and colorful flowers and butterflies on the skirt, barefoot.",
+  "Taylor Shift": "Taylor Shift is a pink cartoon train engine with a friendly face, big blue eyes, a happy smile, rosy cheeks, gold trim, a gold cowcatcher and gold lamp, pink hibiscus flowers by the smokestack, and a pink-and-gold nameplate reading Taylor Shift. She is a train: she rolls, she does not walk."
+};
+
 function systemPrompt(character, theme, age) {
   return [
     "You write a gentle bedtime story for the Bellefly Kids world.",
     "Character: " + character + ". Lesson: " + theme + ". Age band: " + age + ".",
-    "Setting: the Bellefly Kids Garden, bright daytime, kind friends, calm pace.",
+    "The character must look and be exactly this, never changed: " + (CHARACTER_LOOKS[character] || character) + ".",
+    "Setting: the Bellefly Kids Garden in the evening, as the character gets ready for bed, kind friends, calm pace.",
+    "This is a bedtime story, not a morning story: do NOT start with waking up, morning, a new day, or warm morning sun. Start in the evening, winding down toward bed.",
+    "Use only the chosen character, with Garden friends in general if needed. Do NOT invent new named characters, and do NOT give another character's name to a different animal or person.",
     "Rules, all mandatory:",
     "- Kind and helpful: show helping, kindness, sharing, thanks, or trying.",
     "- Calm and bedtime-safe: no scary, frightening, or hurtful words, no fights,",
@@ -50,11 +66,20 @@ function systemPrompt(character, theme, age) {
 
 export default {
   async fetch(request, env) {
+    // CORS — the demo page on https://belleflykids.github.io must be able to
+    // read the response. Without this header the browser blocks it, even
+    // when the Worker returns a draft. Only that one origin is allowed.
+    const cors = {
+      "Access-Control-Allow-Origin": "https://belleflykids.github.io",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type"
+    };
     const json = (obj, status) => new Response(JSON.stringify(obj), {
       status,
-      headers: { "Content-Type": "application/json" }
+      headers: Object.assign({ "Content-Type": "application/json" }, cors)
     });
 
+    if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
     if (request.method !== "POST") return json({ error: "Parent AI draft only" }, 405);
 
     let body;
@@ -99,3 +124,43 @@ export default {
     if (!env.META_API_KEY) {
       return json({ error: "AI not connected yet — credit/key pending" }, 503);
     }
+
+    // STEP 2 — live call, server-side only. The key never leaves this Worker.
+    // Meta Model API, OpenAI-compatible chat completions endpoint.
+    try {
+      const resp = await fetch("https://api.meta.ai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + env.META_API_KEY
+        },
+        body: JSON.stringify({
+          model: "muse-spark-1.3",
+          messages: [
+            { role: "system", content: systemPrompt(character, theme, age) },
+            { role: "user", content: "Write the bedtime story." }
+          ],
+          // Muse Spark is a reasoning model: max_tokens counts its thinking
+          // tokens too. 600 was used up by thinking alone on 30 Oct (1 request,
+          // 225 input, 600 output, no story text). Raise the cap and keep
+          // reasoning minimal, so room is left for the story itself.
+          max_tokens: 2000,
+          reasoning_effort: "minimal",
+          temperature: 0.7
+        })
+      });
+      if (!resp.ok) {
+        return json({ error: "Meta AI request failed, no draft returned" }, 502);
+      }
+      const data = await resp.json();
+      const draft = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+      if (!draft || typeof draft !== "string") {
+        return json({ error: "Meta AI returned no draft text" }, 502);
+      }
+      // Return draft ONLY. Validation + parent approval happen in the browser.
+      return json({ draft: draft.trim() }, 200);
+    } catch (e) {
+      return json({ error: "Meta AI request failed, no draft returned" }, 502);
+    }
+  }
+};
