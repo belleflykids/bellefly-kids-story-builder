@@ -118,7 +118,7 @@
     </div>
   </div>
 
-  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026. Demo stories only. V43, November 1, 2026. Parent-led: a parent picks, a parent reads aloud, children listen, never type. Fixed, checked stories work. Parent-only AI draft mode is live through a protected Cloudflare Worker server, checked first and parent-approved first. No child accounts, no stored child data.</footer>
+  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026. Demo stories only. V44, November 1, 2026. Parent-led: a parent picks, a parent reads aloud, children listen, never type. Fixed, checked stories work. Parent-only AI draft mode is live through a protected Cloudflare Worker server, checked first and parent-approved first. No child accounts, no stored child data.</footer>
 
 <div class="card">
     <h2>Live rejection demo</h2>
@@ -894,6 +894,9 @@ document.getElementById("aiApproveBtn").onclick = function(){
     return;
   }
   document.getElementById("storyTitle").textContent = selChar + " — " + titleCase(selTheme) + " (ages " + selAge + ") — parent-approved AI draft";
+  const aiImg = document.getElementById("storyImg");
+  aiImg.src = IMAGES[selChar]; aiImg.alt = selChar + " in the Bellefly Kids Garden"; aiImg.style.display = "block";
+  aiImg.onerror = function(){ this.style.display = "none"; };
   document.getElementById("storyText").textContent = draftToShow;
   document.getElementById("storyCard").style.display = "block";
   document.getElementById("storyCard").scrollIntoView({behavior:"smooth"});
