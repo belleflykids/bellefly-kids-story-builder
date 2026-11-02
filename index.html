@@ -100,7 +100,7 @@
       <li><strong>Name check:</strong> a child's first name is optional, never stored, and is only used for that one story if it passes the name check.</li>
       <li><strong>Fail-closed:</strong> if anything is in doubt, the draft is blocked and a safe, checked story is shown instead.</li>
     </ul>
-    <p class="note">Known limit, honestly shown: this is a word-and-phrase check. It cannot catch every harmful meaning — the safety test suite below shows the checks it runs, including 3 harder tests that were gaps in V32 and are closed since V34. Together, this check plus the parent preview and Approve gate act as the child protection layer: no draft reaches a child without both.</p>
+    <p class="note">Known limit, honestly shown: this is a word-and-phrase check. It cannot catch every harmful meaning — the safety test suite below shows the checks it runs, including harder tests that were gaps in V32 and are closed since V34, plus a sneaking-out-after-dark test closed in V46. Together, this check plus the parent preview and Approve gate act as the child protection layer: no draft reaches a child without both.</p>
   </div>
 
 <div class="card">
@@ -118,7 +118,7 @@
     </div>
   </div>
 
-  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026. Demo stories only. V44, November 1, 2026. Parent-led: a parent picks, a parent reads aloud, children listen, never type. Fixed, checked stories work. Parent-only AI draft mode is live through a protected Cloudflare Worker server, checked first and parent-approved first. No child accounts, no stored child data.</footer>
+  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026. Demo stories only. V46, November 1, 2026. Parent-led: a parent picks, a parent reads aloud, children listen, never type. Fixed, checked stories work. Parent-only AI draft mode is live through a protected Cloudflare Worker server, checked first and parent-approved first. No child accounts, no stored child data.</footer>
 
 <div class="card">
     <h2>Live rejection demo</h2>
@@ -131,7 +131,13 @@
     <h2>Parent only: Try a new AI draft</h2>
     <p class="note">This is the live AI step judges can see. It does NOT go straight to a child. A Muse Spark 1.3 (Meta Model API, Standard tier) draft is made through a protected Cloudflare Worker server (not from this page, code in the repo ai-agent folder), checked by the rule validator, and shown here to a parent first. Only if a parent taps Approve does it become a story to read aloud. If it fails the check, it is blocked, not shown as a story.</p>
     <p class="note" id="aiStatus">AI draft mode: live through the protected Cloudflare Worker server. Fixed, checked stories above still work. A draft is checked first, shown to a parent first, and only becomes a story if a parent taps Approve.</p>
-    <button class="secondary" id="aiDraftBtn" style="width:100%;padding:12px">Ask the AI for a new draft (parent only)</button>
+    <div id="parentGate" style="margin-top:12px">
+      <p class="note"><strong>Parent gate — quick check for grown-ups:</strong> <span id="gateQuestion">What is 4 + 3?</span></p>
+      <input id="gateAnswer" inputmode="numeric" style="width:100%;padding:10px;border-radius:10px" placeholder="Answer">
+      <button id="gateBtn" style="width:100%;padding:12px;margin-top:8px">Continue</button>
+      <div id="gateMsg" style="margin-top:8px"></div>
+    </div>
+    <button class="secondary" id="aiDraftBtn" disabled style="width:100%;padding:12px;margin-top:12px">Ask the AI for a new draft (parent only)</button>
     <div id="aiDraftBox" style="display:none;margin-top:12px"></div>
     <div id="aiValidatorLog" style="margin-top:12px"></div>
     <div style="display:none" id="aiApproveRow">
@@ -150,7 +156,7 @@
 
 <div class="card" id="suiteCard">
     <h2>Safety test suite</h2>
-    <p class="note">Runs the real validator on 13 test drafts. Core tests should pass or block as intended. Three harder tests were labelled KNOWN GAP in V32 — the validator missed them. In V34 those gaps are closed: the suite now expects all 13 to block or pass as intended. This suite proves what the validator can and cannot catch.</p>
+    <p class="note">Runs the real validator on 14 test drafts. Core tests should pass or block as intended. Three harder tests were labelled KNOWN GAP in V32 — the validator missed them. In V34 those gaps are closed, and in V46 a sneaking-out-after-dark test is also closed: the suite now expects all 14 to block or pass as intended. This suite proves what the validator can and cannot catch.</p>
     <button class="secondary" id="suiteBtn" style="width:100%;padding:12px">Run safety tests</button>
     <div id="suiteOut" style="margin-top:12px"></div>
   </div>
@@ -208,7 +214,7 @@ const STORIES = {
 
 // --- V7 Validator: separate from the story generator, fail-closed ---
 const BANNED_WORDS = ["magic","magical","mystical","ghost","monster","witch","haunted","blood","kill","hate","stupid","dumb","damn","hell","shit","fuck","bitch","scary","scared","afraid","frighten","hurt","dead","died","bully","fight","punish","angry","stranger","secret","knife","gun","weapon","nightmare","roof","climb","climbed","climbing","detergent","bleach","cleaning liquid","poison","medicine","pills"];
-const BANNED_PHRASES = ["stays up all night","stay up all night","only candy","laughs when","laughed when","laughs at","laughed at","teases","teased","by himself","by herself","alone at night","pushes","pushed","hits","no one likes","go away","don't tell","do not tell","sneak out","sneaked out","wander off","wandered off","run away","ran away","without telling","climb onto","climbed onto","climbs onto","on the roof","up on the roof","no one plays with","nobody plays with","left out","leaves out","left him out","left her out","drink the","drank the","could not sit","cannot sit","can not sit","not sit at","not allowed to sit","not invited","not play with","no one invited","taste the cleaning","cleaning liquid","drinking cleaning"];
+const BANNED_PHRASES = ["stays up all night","stay up all night","only candy","laughs when","laughed when","laughs at","laughed at","teases","teased","by himself","by herself","alone at night","pushes","pushed","hits","no one likes","go away","don't tell","do not tell","sneak out","sneaked out","wander off","wandered off","run away","ran away","without telling","climb onto","climbed onto","climbs onto","on the roof","up on the roof","no one plays with","nobody plays with","left out","leaves out","left him out","left her out","drink the","drank the","could not sit","cannot sit","can not sit","not sit at","not allowed to sit","not invited","not play with","no one invited","taste the cleaning","cleaning liquid","drinking cleaning","after dark","grown-ups are asleep","grownups are asleep","grown-ups were asleep","everyone was asleep","everyone is asleep","leaves through","left through","out after dark","sneak"];
 function normalizeText(t){
   return t.toLowerCase().replace(/0/g,"o").replace(/1/g,"i").replace(/\$/g,"s").replace(/@/g,"a");
 }
@@ -578,7 +584,8 @@ const SUITE = [
   {label:"Too short", text:"Goodnight, helped.", expect:"block"},
   {label:"KNOWN GAP: dangerous action", text:"Toby climbed onto the high roof to help his friend get a kite, and everyone said thank you. Goodnight, Toby.", expect:"block"},
   {label:"KNOWN GAP: exclusion", text:"Emma shared her crayons but told the new girl she could not sit at the table. They thanked her anyway. Goodnight.", expect:"block"},
-  {label:"KNOWN GAP: unsafe object", text:"Benny helped his friend open the cabinet and taste the blue cleaning liquid, then they said thank you. Goodnight.", expect:"block"}
+  {label:"KNOWN GAP: unsafe object", text:"Benny helped his friend open the cabinet and taste the blue cleaning liquid, then they said thank you. Goodnight.", expect:"block"},
+  {label:"Sneaking out after dark while grown-ups are asleep", text:"Toby leaves through a garden gate after dark while the grown-ups are asleep, then helps a friend. Goodnight, Toby. Sleep tight, and dream sweet dreams.", expect:"block"}
 ];
 function runSuite(){
   return SUITE.map(function(s){
@@ -708,6 +715,31 @@ document.getElementById("testValidatorBtn").onclick = function(){
   el.innerHTML += "<br><br><strong>Revised draft tested:</strong> \"" + SAFE_REVISION + "\"<br>";
   const tmp = document.createElement("div"); renderChecks(tmp, good); el.innerHTML += tmp.innerHTML;
 };
+// V45 parent gate: simple quick check for grown-ups, no sign-in, no data stored.
+// The AI draft button stays disabled until the gate is passed in this page visit.
+window.__parentGatePassed = false;
+window.__gateSum = 7;
+try{
+  var ga = 3 + Math.floor(Math.random()*7);
+  var gb = 2 + Math.floor(Math.random()*7);
+  window.__gateSum = ga + gb;
+  var gq = document.getElementById("gateQuestion");
+  if(gq) gq.textContent = "What is " + ga + " + " + gb + "?";
+}catch(e){}
+document.getElementById("gateBtn").onclick = function(){
+  var ans = parseInt((document.getElementById("gateAnswer").value || "").trim(), 10);
+  var msg = document.getElementById("gateMsg");
+  if(ans === window.__gateSum){
+    window.__parentGatePassed = true;
+    msg.textContent = "Parent gate passed — you can now ask for a draft to preview.";
+    document.getElementById("aiDraftBtn").disabled = false;
+    document.getElementById("gateAnswer").disabled = true;
+    document.getElementById("gateBtn").disabled = true;
+  } else {
+    msg.textContent = "Not quite — try again.";
+    document.getElementById("gateAnswer").value = "";
+  }
+};
 renderAll();
 </script>
 
@@ -734,7 +766,8 @@ const SUITE = [
   {label:"Too short", text:"Goodnight, helped.", expect:"block"},
   {label:"KNOWN GAP: dangerous action", text:"Toby climbed onto the high roof to help his friend get a kite, and everyone said thank you. Goodnight, Toby.", expect:"block"},
   {label:"KNOWN GAP: exclusion", text:"Emma shared her crayons but told the new girl she could not sit at the table. They thanked her anyway. Goodnight.", expect:"block"},
-  {label:"KNOWN GAP: unsafe object", text:"Benny helped his friend open the cabinet and taste the blue cleaning liquid, then they said thank you. Goodnight.", expect:"block"}
+  {label:"KNOWN GAP: unsafe object", text:"Benny helped his friend open the cabinet and taste the blue cleaning liquid, then they said thank you. Goodnight.", expect:"block"},
+  {label:"Sneaking out after dark while grown-ups are asleep", text:"Toby leaves through a garden gate after dark while the grown-ups are asleep, then helps a friend. Goodnight, Toby. Sleep tight, and dream sweet dreams.", expect:"block"}
 ];
 function runSuite(){
   return SUITE.map(function(s){
@@ -766,6 +799,7 @@ document.getElementById("suiteBtn").onclick = function(){
   });
 };
 document.getElementById("aiDraftBtn").onclick = async function(){
+  if(!window.__parentGatePassed){ document.getElementById("aiStatus").textContent = "Please answer the parent quick check first."; return; }
   // V40 fold-in (from V39 reviewer ideas, kept in Chalette's Parent-only wording):
   // a proper pending-draft state, not a bare global string; a fetch timeout and
   // busy guard; blocked draft text is NOT shown; Approve rechecks and discards
