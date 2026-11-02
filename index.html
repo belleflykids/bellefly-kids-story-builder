@@ -118,7 +118,7 @@
     </div>
   </div>
 
-  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026. Demo stories only. V42, October 30, 2026. Parent-led: a parent picks, a parent reads aloud, children listen, never type. Fixed, checked stories work. Parent-only AI draft mode is live through a protected Cloudflare Worker server, checked first and parent-approved first. No child accounts, no stored child data.</footer>
+  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026. Demo stories only. V43, November 1, 2026. Parent-led: a parent picks, a parent reads aloud, children listen, never type. Fixed, checked stories work. Parent-only AI draft mode is live through a protected Cloudflare Worker server, checked first and parent-approved first. No child accounts, no stored child data.</footer>
 
 <div class="card">
     <h2>Live rejection demo</h2>
@@ -671,7 +671,12 @@ function makeStory(){
   document.getElementById("stopBtn").style.display = "none";
 }
 document.getElementById("makeBtn").onclick = makeStory;
-document.getElementById("againBtn").onclick = makeStory;
+document.getElementById("againBtn").onclick = function(){
+  try{ window.speechSynthesis.cancel(); }catch(e){}
+  document.getElementById("stopBtn").style.display = "none";
+  document.getElementById("storyCard").style.display = "none";
+  window.scrollTo(0, 0);
+};
 document.getElementById("readBtn").onclick = function(){
   const text = document.getElementById("storyText").textContent;
   if(!("speechSynthesis" in window)){ alert("Read to me is not available on this device. A parent can read the story aloud."); return; }
