@@ -118,7 +118,7 @@
     </div>
   </div>
 
-  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026. Demo stories only. V47, November 1, 2026. Parent-led: a parent picks, a parent reads aloud, children listen, never type. Fixed, checked stories work. Parent-only AI draft mode is live through a protected Cloudflare Worker server, checked first and parent-approved first. No child accounts, no stored child data.</footer>
+  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026. Demo stories only. V48, November 2, 2026. Parent-led: a parent picks, a parent reads aloud, children listen, never type. Fixed, checked stories work. Parent-only AI draft mode is live through a protected Cloudflare Worker server, checked first and parent-approved first. No child accounts, no stored child data.</footer>
 
 <div class="card">
     <h2>Live rejection demo</h2>
@@ -227,7 +227,7 @@ function validateStory(text){
   checks.push({name:"No banned ideas (staying up alone, only candy, laughing at a friend)", pass:!badPhrase, detail: badPhrase ? "Found: "+badPhrase : "None found"});
   checks.push({name:"Kind help present", pass:/(help|kind|share|thank|together|friend|brave|calm|try)/.test(n), detail:"Story must show help, kindness, sharing, thanks, friendship, bravery, or calm trying"});
   const tail = n.slice(-300);
-  checks.push({name:"Calm bedtime ending", pass:/(goodnight|sleep tight|dream sweet dreams)/.test(tail), detail:"Ending must say goodnight / sleep tight"});
+  checks.push({name:"Calm bedtime ending", pass:/(goodnight|good night|sleep tight|dream sweet dreams)/.test(tail), detail:"Ending must say goodnight / sleep tight"});
   checks.push({name:"No scary or teasing language", pass:!/(scary|frighten|teases|bull)/.test(n), detail:"No scary or teasing words"});
   const wordCount = n.split(/\s+/).filter(Boolean).length;
   checks.push({name:"Reasonable length (15 to 1500 words)", pass:wordCount>=15 && wordCount<=1500, detail:wordCount+" words"});
