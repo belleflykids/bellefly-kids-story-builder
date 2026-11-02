@@ -118,7 +118,7 @@
     </div>
   </div>
 
-  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026. Demo stories only. V46, November 1, 2026. Parent-led: a parent picks, a parent reads aloud, children listen, never type. Fixed, checked stories work. Parent-only AI draft mode is live through a protected Cloudflare Worker server, checked first and parent-approved first. No child accounts, no stored child data.</footer>
+  <footer>Bellefly Kids — Demo built for the Meta Global AI Developer Hackathon, October 26 to November 4, 2026. Demo stories only. V47, November 1, 2026. Parent-led: a parent picks, a parent reads aloud, children listen, never type. Fixed, checked stories work. Parent-only AI draft mode is live through a protected Cloudflare Worker server, checked first and parent-approved first. No child accounts, no stored child data.</footer>
 
 <div class="card">
     <h2>Live rejection demo</h2>
@@ -640,6 +640,9 @@ function makeStory(){
   else if(selTheme === "gratitude" && GRATITUDE_SPECIFIC[selChar]) paras = GRATITUDE_SPECIFIC[selChar].slice();
   else if(selTheme === "friendship" && FRIENDSHIP_SPECIFIC[selChar]) paras = FRIENDSHIP_SPECIFIC[selChar].slice();
   else paras = STORIES[selTheme].slice();
+  // Youngest version (2-3): first two paragraphs only — setup plus concrete action.
+  // The abstract closing paragraph is held for ages 4-5 and 6-7.
+  if(selAge === "2-3") paras = paras.slice(0,2);
   if(selAge === "4-5") paras = paras.concat(EXTRA_45[selTheme]);
   if(selAge === "6-7") paras = paras.concat(EXTRA_45[selTheme], [EXTRA_67[selTheme]]);
   // Taylor Shift is a train: she rolls, she does not walk.
